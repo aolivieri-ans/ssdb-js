@@ -207,11 +207,33 @@ describe("Key-value", () => {
   });
 
   describe("substr", () => {
+    // Non-existing key, exceeding offset/length:
+    // They all return empty string
+
     test("substr of an existing key, valid offset, valid length", async () => {
       let resp = await ssdb.a_set("marino", "sumo");
       expect(resp).toBe("ok");
       resp = await ssdb.a_substr("marino", 0, 2);
-      expect(resp).toBe("ma");
+      expect(resp).toBe("su");
+    });
+
+    test("substr of an existing key, valid offset, exceeding length", async () => {
+      let resp = await ssdb.a_set("marino", "sumo");
+      expect(resp).toBe("ok");
+      resp = await ssdb.a_substr("marino", 0, 200);
+      expect(resp).toBe("sumo");
+    });
+
+    test("substr of an existing key, invalid offset", async () => {
+      let resp = await ssdb.a_set("marino", "sumo");
+      expect(resp).toBe("ok");
+      resp = await ssdb.a_substr("marino", 100, 1);
+      expect(resp).toBe("");
+    });
+
+    test("substr of a non-existing key", async () => {
+      resp = await ssdb.a_substr("marino", 0, 1);
+      expect(resp).toBe("");
     });
   });
 
