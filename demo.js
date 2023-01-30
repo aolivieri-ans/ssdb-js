@@ -21,10 +21,5 @@ async function pd_async()
 }
 
 
-//pd_async().then((res) => process.exit(0))
-
-
-ssdb.get("nonexistent", function(res) {
-	console.log("nonexistent> ", res)
-})
+pd_async().then((res) => process.exit(0))
 
