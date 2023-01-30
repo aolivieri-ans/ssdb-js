@@ -253,14 +253,55 @@ describe("Key-value", () => {
   });
 
   describe("keys", () => {
-    test("with some keys", async () => {
-      let keyz = ["marino", "dora", "oreste", "sirvano"];
-      keyz.forEach(async (key) => {
+    async function do_keys_test(
+      keys,
+      range_start,
+      range_end,
+      limit,
+      expected_out
+    ) {
+      keys.forEach(async (key) => {
         let resp = await ssdb.a_set(key, "sumo");
         expect(resp).toBe("ok");
       });
-      let resp = await ssdb.a_keys("a", "z", 100);
-      expect(resp.sort()).toEqual(keyz.sort());
+      let resp = await ssdb.a_keys(range_start, range_end, limit);
+      expect(resp.sort()).toEqual(expected_out.sort());
+    }
+
+    test("with some keys, valid range, valid limit", async () => {
+      await do_keys_test(
+        ["marino", "dora", "oreste", "sirvano"],
+        "a",
+        "z",
+        100,
+        ["marino", "dora", "oreste", "sirvano"]
+      );
+    });
+
+    test("with some keys, empty range, valid limit", async () => {
+      await do_keys_test(
+        ["marino", "dora", "oreste", "sirvano"],
+        "z",
+        "x",
+        100,
+        []
+      );
+    });
+
+    test("with some keys, valid range, limit=0", async () => {
+      await do_keys_test(
+        ["marino", "dora", "oreste", "sirvano"],
+        "a",
+        "z",
+        0,
+        []
+      );
+    });
+
+    test("with some keys, valid range, limit=0", async () => {
+      await do_keys_test(["marino", "dora", "oreste", "sirvano"], "a", "z", 1, [
+        "dora",
+      ]);
     });
   });
 
