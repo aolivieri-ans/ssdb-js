@@ -298,7 +298,7 @@ describe("Key-value", () => {
       );
     });
 
-    test("with some keys, valid range, limit=0", async () => {
+    test("with some keys, valid range, limit=1", async () => {
       await do_keys_test(["marino", "dora", "oreste", "sirvano"], "a", "z", 1, [
         "dora",
       ]);
@@ -306,7 +306,31 @@ describe("Key-value", () => {
   });
 
   describe("rkeys", () => {
-    // TODO
+    // Like keys, but in reverse order.
+    async function do_rkeys_test(
+      keys,
+      range_start,
+      range_end,
+      limit,
+      expected_out
+    ) {
+      keys.reverse().forEach(async (key) => {
+        let resp = await ssdb.a_set(key, "sumo");
+        expect(resp).toBe("ok");
+      });
+      let resp = await ssdb.a_keys(range_start, range_end, limit);
+      expect(resp.sort()).toEqual(expected_out.sort());
+    }
+
+    test("with some keys, valid range, valid limit", async () => {
+      await do_rkeys_test(
+        ["marino", "dora", "oreste", "sirvano"],
+        "a",
+        "z",
+        100,
+        ["marino", "dora", "oreste", "sirvano"]
+      );
+    });
   });
 
   describe("scan", () => {
