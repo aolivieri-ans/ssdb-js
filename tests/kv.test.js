@@ -265,7 +265,7 @@ describe("Key-value", () => {
         expect(resp).toBe("ok");
       });
       let resp = await ssdb.a_keys(range_start, range_end, limit);
-      expect(resp.sort()).toEqual(expected_out.sort());
+      expect(resp).toEqual(expected_out);
     }
 
     test("with some keys, valid range, valid limit", async () => {
@@ -274,7 +274,7 @@ describe("Key-value", () => {
         "a",
         "z",
         100,
-        ["marino", "dora", "oreste", "sirvano"]
+        ["dora", "marino", "oreste", "sirvano"]
       );
     });
 
@@ -314,27 +314,36 @@ describe("Key-value", () => {
       limit,
       expected_out
     ) {
-      keys.reverse().forEach(async (key) => {
+      keys.forEach(async (key) => {
         let resp = await ssdb.a_set(key, "sumo");
         expect(resp).toBe("ok");
       });
-      let resp = await ssdb.a_keys(range_start, range_end, limit);
-      expect(resp.sort()).toEqual(expected_out.sort());
+      let resp = await ssdb.a_rkeys(range_start, range_end, limit);
+      expect(resp).toEqual(expected_out);
     }
 
     test("with some keys, valid range, valid limit", async () => {
       await do_rkeys_test(
         ["marino", "dora", "oreste", "sirvano"],
-        "a",
         "z",
+        "a",
         100,
-        ["marino", "dora", "oreste", "sirvano"]
+        ["sirvano", "oreste", "marino", "dora"]
       );
     });
   });
 
   describe("scan", () => {
-    // TODO
+    // false on error, otherwise an associative array containing the key-value pairs.
+    test("scan on multiple keys", async () => {
+      ["marino", "dora", "oreste", "sirvano"].forEach(async (key) => {
+        let resp = await ssdb.a_set(key, "sumo");
+        expect(resp).toBe("ok");
+      });
+      // TODO andoli
+      //let resp = await ssdb.a_scan("a", "z", 100);
+      //console.log(resp);
+    });
   });
 
   describe("rscan", () => {
