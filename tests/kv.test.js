@@ -371,6 +371,7 @@ describe("Key-value", () => {
   });
 
   describe("rscan", () => {
+    // Like scan, but in reverse order.
     let testObjects = {
       Yale: "Dioma",
       Donna: "Arcama",
@@ -389,15 +390,54 @@ describe("Key-value", () => {
   });
 
   describe("multi_set", () => {
-    // TODO
+    // returns false on error, other values indicate OK.
+    let testObjects = {
+      Yale: "Dioma",
+      Donna: "Arcama",
+      Otta: "Migno",
+      Lona: "Zocco",
+      Nara: "Stabbocchi",
+    };
+    test("multi_set, non empty key/value set", async () => {
+      let resp = await ssdb.a_multi_set(testObjects);
+      expect(resp).toEqual("ok");
+      resp = await ssdb.a_scan("A", "z", 100);
+      expect(resp).toEqual(testObjects);
+    });
   });
 
   describe("multi_get", () => {
-    // TODO
+    let testObjects = {
+      Yale: "Dioma",
+      Donna: "Arcama",
+      Otta: "Migno",
+      Lona: "Zocco",
+      Nara: "Stabbocchi",
+    };
+    test("multi_get", async () => {
+      let resp = await ssdb.a_multi_set(testObjects);
+      expect(resp).toEqual("ok");
+      resp = await ssdb.a_multi_get(["Yale", "Donna"]);
+      expect(resp).toEqual({ Yale: "Dioma", Donna: "Arcama" });
+    });
   });
 
   describe("multi_del", () => {
-    // TODO
+    let testObjects = {
+      Yale: "Dioma",
+      Donna: "Arcama",
+      Otta: "Migno",
+      Lona: "Zocco",
+      Nara: "Stabbocchi",
+    };
+    test("multi_del", async () => {
+      let resp = await ssdb.a_multi_set(testObjects);
+      expect(resp).toEqual("ok");
+      resp = await ssdb.a_multi_del(["Yale", "Donna", "Otta", "Lona"]);
+      expect(resp).toEqual("ok");
+      resp = await ssdb.a_scan("", "", 100);
+      expect(resp).toEqual({ Nara: "Stabbocchi" });
+    });
   });
 });
 
