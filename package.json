@@ -4,7 +4,8 @@
   "description": "SSDB nodejs Client",
   "main": "SSDB.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "jest --detectOpenHandles",
+    "start": "node demo.js"
   },
   "repository": {
     "type": "git",
@@ -19,5 +20,8 @@
   "bugs": {
     "url": "https://github.com/ssdb/nodessdb/issues"
   },
-  "homepage": "https://github.com/ssdb/nodessdb#readme"
+  "homepage": "https://github.com/ssdb/nodessdb#readme",
+  "devDependencies": {
+    "jest": "^29.4.1"
+  }
 }

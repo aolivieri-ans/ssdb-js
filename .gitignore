@@ -6,3 +6,4 @@
 *.swp
 *_cpy_*
 
+node_modules/

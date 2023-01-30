@@ -136,7 +136,7 @@ exports.connect = function(opts, listener){
 			}
 			var line = recv_buf.slice(spos, pos).toString();
 			spos = pos + 1;
-			line = line.replace(/^\s+(.*)\s+$/, '\1');
+			line = line.replace(/^\s+(.*)\s+$/, '$&');
 			if(line.length == 0){
 				// parse end
 				//recv_buf = recv_buf.substr(spos);
@@ -196,7 +196,7 @@ exports.connect = function(opts, listener){
 	
 	
 	////////////////// Key Value
-	
+
 	//get key Get the value related to the specified key
 	self.get = function(key, callback){
 		self.request('get', [key], function(resp){
@@ -207,6 +207,24 @@ exports.connect = function(opts, listener){
 		});
 	}
 
+	self.a_get = async function (key)
+	{
+		return new Promise(
+			(resolve, reject) => {
+				self.request('get', [key], function(resp){
+					let err = resp[0] == 'ok'? 0 : resp[0];
+					if(err == 0){
+						resolve(resp[1].toString())
+					}else{
+						reject(err)
+					}
+				});
+			}
+		)
+
+	}
+
+
 	//set key value Set the value of the key.
 	self.set = function(key, val, callback){
 		self.request('set', [key, val], function(resp){
@@ -216,6 +234,24 @@ exports.connect = function(opts, listener){
 			}
 		});
 	}
+
+	self.a_set = async function (key, val)
+	{
+		return new Promise(
+			(resolve, reject) => {
+				self.request('set', [key, val], function(resp){
+					let err = resp[0] == 'ok'? 0 : resp[0];
+					if(err == 0){
+						resolve('ok')
+					}else{
+						reject(err)
+					}
+				});
+			}
+		)
+
+	}
+
 
 	//setx key value ttl Set the value of the key, with a time to live. 
     self.setx = function(key, val, ttl, callback){
@@ -1355,6 +1391,25 @@ exports.connect = function(opts, listener){
 				callback(err);
 			}
 		});
+	}
+
+	self.a_flushdb = async function(type){
+		return new Promise(
+			(resolve, reject) => {
+				if (!type)	type = '';
+				if (['', 'kv', 'hash', 'zset', 'list'].indexOf(type) == -1) type = '';
+
+				self.request('flushdb', [type], function(resp){
+					let err = resp[0] == 'ok'? 0 : resp[0];
+					if(err == 0){
+						resolve('ok')
+					}else{
+						reject(err)
+					}
+				});
+			}
+		)
+
 	}
 	
 	//info [opt] Return the information of server.
