@@ -405,6 +405,23 @@ exports.connect = function(opts, listener){
 			}
 		});
 	}
+
+	self.a_del = async function (key)
+	{
+		return new Promise(
+			(resolve, reject) => {
+				self.request('del', [key], function(resp){
+					let err = resp[0] == 'ok'? 0 : resp[0];
+					if(err == 0){
+						resolve('ok')
+					}else{
+						reject(err)
+					}
+				});
+			}
+		)
+
+	}
 	
 	//incr key [num] Increment the number stored at key by num.
 	self.incr = function(key, num, callback){

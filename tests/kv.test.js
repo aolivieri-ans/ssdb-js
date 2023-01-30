@@ -8,6 +8,7 @@ let ssdb = SSDB.connect({host, port}, (wtf) => wtf);
 describe("Key-value", () => {
 
   describe("set", () => {
+    // false on error, other values indicate OK.
 
     test('set a valid value', async () => {
       const resp = await ssdb.a_set("marino", "sumo");
@@ -28,13 +29,14 @@ describe("Key-value", () => {
   });
 
   describe("setx", () => {
+    // false on error, other values indicate OK.
 
-    test('setx a valid value', async () => {
+    test('setx with TTL=1', async () => {
       const resp = await ssdb.a_setx("marino", "sumo", 1);
       expect(resp).toBe('ok');
     });
     
-    test('setx a valid value, 0 ttl', async () => {
+    test('setx with TTL=0', async () => {
       const resp = await ssdb.a_setx("marino", "sumo", 0);
       expect(resp).toBe('ok');
       await new Promise(r => setTimeout(r, 10)); // sleep 10ms
@@ -155,7 +157,20 @@ describe("Key-value", () => {
   });
 
   describe("del", () => {
-    // TODO
+    // Status reply. You can not determine whether the key exists or not by delete command.
+    test('del an existing key', async () => {
+      let resp = await ssdb.a_set("marino", "firstvalue");
+      expect(resp).toBe('ok');
+      resp = await ssdb.a_del("marino");
+      expect(resp).toBe('ok');
+    });
+
+    test('del a non-existing key', async () => {
+      resp = await ssdb.a_del("marino");
+      expect(resp).toBe('ok');
+    });
+
+
   });
 
   describe("incr", () => {
