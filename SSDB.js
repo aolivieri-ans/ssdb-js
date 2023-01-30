@@ -617,6 +617,23 @@ exports.connect = function (opts, listener) {
     });
   };
 
+  self.a_keys = function (key_start, key_end, limit) {
+    return new Promise((resolve, reject) => {
+      self.request("keys", [key_start, key_end, limit], function (resp) {
+        var err = resp[0] == "ok" ? 0 : resp[0];
+        if (err == 0) {
+          var data = [];
+          for (var i = 1; i < resp.length; i++) {
+            data.push(resp[i].toString());
+          }
+          resolve(data);
+        } else {
+          reject(err);
+        }
+      });
+    });
+  };
+
   ////////////////// Sorted set
 
   //zget name key Get the score related to the specified key of a zset

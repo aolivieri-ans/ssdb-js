@@ -253,7 +253,16 @@ describe("Key-value", () => {
   });
 
   describe("keys", () => {
-    // TODO
+    test("with some keys", async () => {
+      let keyz = ["marino", "dora", "oreste", "sirvano"];
+      keyz.forEach(async (key) => {
+        let resp = await ssdb.a_set(key, "sumo");
+        expect(resp).toBe("ok");
+      });
+      let resp = await ssdb.a_keys("a", "z", 100);
+      console.log(resp);
+      expect(resp.sort()).toEqual(keyz.sort());
+    });
   });
 
   describe("rkeys", () => {
