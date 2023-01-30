@@ -291,7 +291,7 @@ describe("Key-value", () => {
       await do_keys_test(
         ["marino", "dora", "oreste", "sirvano"],
         "a",
-        "z",
+        "Z",
         0,
         []
       );
@@ -334,19 +334,58 @@ describe("Key-value", () => {
 
   describe("scan", () => {
     // false on error, otherwise an associative array containing the key-value pairs.
-    test("scan on multiple keys", async () => {
-      ["marino", "dora", "oreste", "sirvano"].forEach(async (key) => {
-        let resp = await ssdb.a_set(key, "sumo");
+    let testObjects = {
+      Yale: "Dioma",
+      Donna: "Arcama",
+      Otta: "Migno",
+      Lona: "Zocco",
+      Nara: "Stabbocchi",
+    };
+
+    test("scan on multiple keys, valid range, limit=100", async () => {
+      for (const [key, value] of Object.entries(testObjects)) {
+        let resp = await ssdb.a_set(key, value);
         expect(resp).toBe("ok");
-      });
-      // TODO andoli
-      //let resp = await ssdb.a_scan("a", "z", 100);
-      //console.log(resp);
+      }
+      let resp = await ssdb.a_scan("A", "z", 100);
+      expect(resp).toEqual(testObjects);
+    });
+
+    test("scan on multiple keys, valid range, limit=1", async () => {
+      for (const [key, value] of Object.entries(testObjects)) {
+        let resp = await ssdb.a_set(key, value);
+        expect(resp).toBe("ok");
+      }
+      let resp = await ssdb.a_scan("A", "z", 1);
+      expect(resp).toEqual({ Donna: "Arcama" });
+    });
+
+    test("scan on multiple keys, empty range", async () => {
+      for (const [key, value] of Object.entries(testObjects)) {
+        let resp = await ssdb.a_set(key, value);
+        expect(resp).toBe("ok");
+      }
+      let resp = await ssdb.a_scan("A", "A");
+      expect(resp).toEqual({});
     });
   });
 
   describe("rscan", () => {
-    // TODO
+    let testObjects = {
+      Yale: "Dioma",
+      Donna: "Arcama",
+      Otta: "Migno",
+      Lona: "Zocco",
+      Nara: "Stabbocchi",
+    };
+    test("rscan on multiple keys, valid range, limit=100", async () => {
+      for (const [key, value] of Object.entries(testObjects)) {
+        let resp = await ssdb.a_set(key, value);
+        expect(resp).toBe("ok");
+      }
+      let resp = await ssdb.a_rscan("z", "A", 100);
+      expect(resp).toEqual(testObjects);
+    });
   });
 
   describe("multi_set", () => {
