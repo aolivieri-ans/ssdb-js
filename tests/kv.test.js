@@ -93,7 +93,27 @@ describe("Key-value", () => {
   });
 
   describe("ttl", () => {
-    // TODO
+    // Time to live of the key, in seconds, -1 if there is no associated expire to the key.
+    test('ttl of existing key with no TTL set', async () => {
+      let resp = await ssdb.a_set("marino", "sumo");
+      expect(resp).toBe('ok');
+      resp = await ssdb.a_ttl("marino");
+      expect(resp).toBe(-1);
+    });
+
+    test('ttl of existing key with  TTL set', async () => {
+      let resp = await ssdb.a_setx("marino", "sumo", 20);
+      expect(resp).toBe('ok');
+      resp = await ssdb.a_ttl("marino");
+      expect(resp).toBeGreaterThan(0)
+    });
+
+    test('ttl of non existing key', async () => {
+      resp = await ssdb.a_ttl("notexistent");
+      expect(resp).toBe(-1);
+    });
+
+
   });
 
   describe("get", () => {

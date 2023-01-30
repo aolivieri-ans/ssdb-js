@@ -324,14 +324,13 @@ exports.connect = function(opts, listener){
         });
     }
 
-	self.a_expire = async function (key, val)
+	self.a_expire = async function (key, ttl)
 	{
 		return new Promise(
 			(resolve, reject) => {
-				self.request('expire', [key, val], function(resp){
+				self.request('expire', [key, ttl], function(resp){
 					// If the key exists and ttl is set, return 1, otherwise return 0.
 					let err = resp[0] == 'ok'? 0 : resp[0];
-					console.log(resp)
 					if(err == 0){
 						resolve(parseInt(resp[1].toString()))
 					}else{
@@ -352,6 +351,23 @@ exports.connect = function(opts, listener){
             }
         });
     }
+
+	self.a_ttl = async function (key)
+	{
+		return new Promise(
+			(resolve, reject) => {
+				self.request('ttl', [key], function(resp){
+					let err = resp[0] == 'ok'? 0 : resp[0];
+					if(err == 0){
+						resolve(parseInt(resp[1].toString()))
+					}else{
+						reject(err)
+					}
+				});
+			}
+		)
+
+	}
 	
 	//getset key value Sets a value and returns the previous entry at that key.
 	self.getset = function(key, val, callback){
