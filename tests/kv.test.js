@@ -174,7 +174,9 @@ describe("Key-value", () => {
   });
 
   describe("incr", () => {
-    // TODO
+    // Returns The new value. 
+    // If the old value cannot be converted to an integer, 
+    // returns error Status Code.
   });
 
   describe("exists", () => {

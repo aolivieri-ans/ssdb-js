@@ -420,7 +420,6 @@ exports.connect = function(opts, listener){
 				});
 			}
 		)
-
 	}
 	
 	//incr key [num] Increment the number stored at key by num.
@@ -434,6 +433,24 @@ exports.connect = function(opts, listener){
                 callback(err, parseInt( resp[1].toString() ));
             }
         });
+    }
+
+	self.a_incr = function(key, num, callback){
+        if (!num) num = 1;
+		num = parseInt( num );		
+		
+		return new Promise(
+			(resolve, reject) => {
+				self.request('incr', [key, num], function(resp){
+					let err = resp[0] == 'ok'? 0 : resp[0];
+					if(err == 0){
+						resolve('ok')
+					}else{
+						reject(err)
+					}
+				});
+			}
+		)
     }
 	
 	//exists key Verify if the specified key exists.
