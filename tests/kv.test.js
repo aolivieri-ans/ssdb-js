@@ -207,7 +207,12 @@ describe("Key-value", () => {
   });
 
   describe("substr", () => {
-    // TODO
+    test("substr of an existing key, valid offset, valid length", async () => {
+      let resp = await ssdb.a_set("marino", "sumo");
+      expect(resp).toBe("ok");
+      resp = await ssdb.a_substr("marino", 0, 2);
+      expect(resp).toBe("ma");
+    });
   });
 
   describe("strlen", () => {

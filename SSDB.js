@@ -458,6 +458,19 @@ exports.connect = function (opts, listener) {
     });
   };
 
+  self.a_substr = function (key, start, size) {
+    return new Promise((resolve, reject) => {
+      self.request("substr", [key, start, size], function (resp) {
+        let err = resp[0] == "ok" ? 0 : resp[0];
+        if (err == 0) {
+          resolve(resp[1].toString());
+        } else {
+          reject(err);
+        }
+      });
+    });
+  };
+
   //strlen key Return the number of bytes of a string.
   self.strlen = function (key, callback) {
     self.request("strlen", [key], function (resp) {
