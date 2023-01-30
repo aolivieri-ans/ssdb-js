@@ -481,6 +481,19 @@ exports.connect = function (opts, listener) {
     });
   };
 
+  self.a_strlen = function (key) {
+    return new Promise((resolve, reject) => {
+      self.request("strlen", [key], function (resp) {
+        let err = resp[0] == "ok" ? 0 : resp[0];
+        if (err == 0) {
+          resolve(parseInt(resp[1].toString()));
+        } else {
+          reject(err);
+        }
+      });
+    });
+  };
+
   //rkeys key_start key_end limit List keys in range (key_start, key_end], in reverse order.
   self.rkeys = function (key_start, key_end, limit, callback) {
     if (typeof limit == "function") {

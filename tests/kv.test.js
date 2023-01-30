@@ -238,7 +238,18 @@ describe("Key-value", () => {
   });
 
   describe("strlen", () => {
-    // TODO
+    // Returns number of bytes of the string, if key not exists, returns 0.
+    test("strlen of an existing key", async () => {
+      let resp = await ssdb.a_set("marino", "sumo");
+      expect(resp).toBe("ok");
+      resp = await ssdb.a_strlen("marino", 0, 2);
+      expect(resp).toBe(4);
+    });
+
+    test("strlen of a non-existing key", async () => {
+      resp = await ssdb.a_strlen("marino", 0, 2);
+      expect(resp).toBe(0);
+    });
   });
 
   describe("keys", () => {
