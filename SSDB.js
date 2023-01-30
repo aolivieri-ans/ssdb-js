@@ -430,12 +430,12 @@ exports.connect = function(opts, listener){
 		self.request('incr', [key, num], function(resp){
             if(callback){
                 var err = resp[0] == 'ok'? 0 : resp[0];
-                callback(err, parseInt( resp[1].toString() ));
+                callback(err, parseInt( resp[1].toString()));
             }
         });
     }
 
-	self.a_incr = function(key, num, callback){
+	self.a_incr = function(key, num){
         if (!num) num = 1;
 		num = parseInt( num );		
 		
@@ -444,7 +444,7 @@ exports.connect = function(opts, listener){
 				self.request('incr', [key, num], function(resp){
 					let err = resp[0] == 'ok'? 0 : resp[0];
 					if(err == 0){
-						resolve('ok')
+						resolve(parseInt( resp[1].toString()))
 					}else{
 						reject(err)
 					}

@@ -170,13 +170,34 @@ describe("Key-value", () => {
       expect(resp).toBe('ok');
     });
 
-
   });
 
   describe("incr", () => {
     // Returns The new value. 
     // If the old value cannot be converted to an integer, 
     // returns error Status Code.
+    test('incr an existing key, with valid int value (default increment)', async () => {
+      let resp = await ssdb.a_set("marino", "1");
+      expect(resp).toBe('ok');
+      resp = await ssdb.a_incr("marino");
+      expect(resp).toBe(2);
+    });
+
+    test('incr an existing key, with valid int value, specifying increment', async () => {
+      let resp = await ssdb.a_set("marino", "1");
+      expect(resp).toBe('ok');
+      resp = await ssdb.a_incr("marino", 10);
+      expect(resp).toBe(11);
+    });
+
+    test('incr an existing key, with an invalid non-int value', async () => {
+      let resp = await ssdb.a_set("marino", "sumo");
+      expect(resp).toBe('ok');
+      await expect(ssdb.a_incr("marino", 1))
+      .rejects
+      .toEqual('error');
+    });
+
   });
 
   describe("exists", () => {
