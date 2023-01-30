@@ -177,6 +177,17 @@ describe("Key-value", () => {
 
   describe("exists", () => {
     // If the key exists, return 1, otherwise return 0.
+    test("exists of an existing key", async () => {
+      let resp = await ssdb.a_set("marino", "sumo");
+      expect(resp).toBe("ok");
+      resp = await ssdb.a_exists("marino");
+      expect(resp).toBe(1);
+    });
+
+    test("exists of a non-existing key", async () => {
+      resp = await ssdb.a_exists("marino");
+      expect(resp).toBe(0);
+    });
   });
 
   describe("getbit", () => {
