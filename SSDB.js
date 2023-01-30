@@ -265,6 +265,23 @@ exports.connect = function(opts, listener){
             }
         });
     }
+
+	self.a_setx = async function (key, val, ttl)
+	{
+		return new Promise(
+			(resolve, reject) => {
+				self.request('setx', [key, val, ttl], function(resp){
+					let err = resp[0] == 'ok'? 0 : resp[0];
+					if(err == 0){
+						resolve('ok')
+					}else{
+						reject(err)
+					}
+				});
+			}
+		)
+
+	}
 	
 	//setnx key value Set the string value in argument as value of the key only if the key doesn"t exist.
 	self.setnx = function(key, val, callback){
