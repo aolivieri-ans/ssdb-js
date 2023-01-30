@@ -31,7 +31,7 @@ exports.connect = function (opts, listener) {
       listener("connect_failed", e);
     } else {
       var callback = callbacks.shift();
-      callback(["error"]);
+      if (callback) callback(["error"]);
     }
   });
 
@@ -187,15 +187,6 @@ exports.connect = function (opts, listener) {
 
   // callback(err, val);
   // err: 0 on sucess, or error_code(string) on error
-
-  self.compact = function (callback) {
-    self.request("compact", function (resp) {
-      if (callback) {
-        let err = resp[0] == "ok" ? 0 : resp[0];
-        callback(err, resp[1].toString());
-      }
-    });
-  };
 
   ////////////////// Sorted set
 
