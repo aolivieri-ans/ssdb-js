@@ -117,7 +117,7 @@ describe("Key-value", () => {
   });
 
   describe("get", () => {
-
+    
     test('get an existing key', async () => {
       let resp = await ssdb.a_set("marino", "sumo");
       expect(resp).toBe('ok');
@@ -134,7 +134,14 @@ describe("Key-value", () => {
   });
 
   describe("getset", () => {
-    // TODO
+    // If the key already exists, the value related to that key is returned. 
+    // Otherwise return not_found Status Code. The value is either added or updated.
+    test('getset a non existing key', async () => {
+      await expect(ssdb.a_getset("marino", "sumo"))
+      .rejects
+      .toEqual('not_found');
+    });
+
   });
 
   describe("del", () => {

@@ -378,6 +378,23 @@ exports.connect = function(opts, listener){
             }
         });
     }
+
+	self.a_getset = async function (key, val)
+	{
+		return new Promise(
+			(resolve, reject) => {
+				self.request('getset', [key, val], function(resp){
+					let err = resp[0] == 'ok'? 0 : resp[0];
+					if(err == 0){
+						resolve(resp[1].toString())
+					}else{
+						reject(err)
+					}
+				});
+			}
+		)
+
+	}
 	
 	//del key Delete specified key.
 	self.del = function(key, callback){
