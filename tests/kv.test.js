@@ -260,7 +260,6 @@ describe("Key-value", () => {
         expect(resp).toBe("ok");
       });
       let resp = await ssdb.a_keys("a", "z", 100);
-      console.log(resp);
       expect(resp.sort()).toEqual(keyz.sort());
     });
   });
