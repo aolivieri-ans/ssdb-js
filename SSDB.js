@@ -215,16 +215,3 @@ exports.connect = function (opts, listener) {
 
   return self;
 };
-
-/*
-example:
-var SSDB = require('./SSDB.js');
-var ssdb = SSDB.connect(host, port, function(err){
-	if(err){
-		return;
-	}
-	ssdb.set('a', new Date(), function(){
-		console.log('set a');
-	});
-});
-*/
