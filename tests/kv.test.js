@@ -1,4 +1,4 @@
-const SSDB = require('./SSDB.js')
+const SSDB = require('../SSDB.js')
 
 let host = "127.0.0.1"
 let port = "8888"
@@ -28,15 +28,68 @@ describe("Key-value", () => {
   });
 
   describe("setx", () => {
-      // TODO
+
+    test('setx a valid value', async () => {
+      const resp = await ssdb.a_setx("marino", "sumo", 1);
+      expect(resp).toBe('ok');
+    });
+    
+    test('setx a valid value, 0 ttl', async () => {
+      const resp = await ssdb.a_setx("marino", "sumo", 0);
+      expect(resp).toBe('ok');
+      await new Promise(r => setTimeout(r, 10)); // sleep 10ms
+      await expect(ssdb.a_get("marino"))
+            .rejects
+            .toEqual('not_found');
+
+    });
+
   });
 
   describe("setnx", () => {
-    // TODO
+
+    // Returns > 1: value is set, 0: key already exists.
+
+    test('setnx when key does not exists', async () => {
+      const resp = await ssdb.a_setnx("marino", "sumo");
+      expect(resp).toBe(1);
+    });
+
+    test('setnx when key does already exists', async () => {
+     
+      let resp = await ssdb.a_set("marino", "firstvalue");
+      expect(resp).toBe('ok');
+      resp = await ssdb.a_get("marino");
+      expect(resp).toBe('firstvalue');
+      resp = await ssdb.a_setnx("marino", "secondvalue");
+      expect(resp).toBe(0);
+      resp = await ssdb.a_get("marino");
+      expect(resp).toBe('firstvalue');
+    });
+
   });
 
   describe("expire", () => {
-    // TODO
+
+    // If the key exists and ttl is set, return 1, otherwise return 0.
+
+    test('expire when key exists', async () => {
+      let resp = await ssdb.a_set("marino", "sumo");
+      expect(resp).toBe('ok');
+      resp = await ssdb.a_expire("marino", 0);
+      expect(resp).toBe(1);
+      await new Promise(r => setTimeout(r, 10)); // sleep 10ms
+      await expect(ssdb.a_get("marino"))
+      .rejects
+      .toEqual('not_found');
+    });
+
+    test('expire when key does not exists', async () => {
+      resp = await ssdb.a_expire("doesnotexists", 0);
+      expect(resp).toBe(0);
+    });
+
+
   });
 
   describe("ttl", () => {

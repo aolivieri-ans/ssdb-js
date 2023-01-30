@@ -292,6 +292,24 @@ exports.connect = function(opts, listener){
             }
         });
     }
+
+	self.a_setnx = async function (key, val)
+	{
+		return new Promise(
+			(resolve, reject) => {
+				self.request('setnx', [key, val], function(resp){
+					let err = resp[0] == 'ok'? 0 : resp[0];
+					if(err == 0){
+						// 1: value is set, 0: key already exists.
+						resolve(parseInt(resp[1].toString()))
+					}else{
+						reject(err)
+					}
+				});
+			}
+		)
+
+	}
 	
 	//expire key ttl Set the time left to live in seconds, only for keys of KV type.
 	self.expire = function(key, ttl, callback){
@@ -305,6 +323,25 @@ exports.connect = function(opts, listener){
             }
         });
     }
+
+	self.a_expire = async function (key, val)
+	{
+		return new Promise(
+			(resolve, reject) => {
+				self.request('expire', [key, val], function(resp){
+					// If the key exists and ttl is set, return 1, otherwise return 0.
+					let err = resp[0] == 'ok'? 0 : resp[0];
+					console.log(resp)
+					if(err == 0){
+						resolve(parseInt(resp[1].toString()))
+					}else{
+						reject(err)
+					}
+				});
+			}
+		)
+
+	}
 	
 	//ttl key Returns the time left to live in seconds, only for keys of KV type.
     self.ttl = function(key, callback){
