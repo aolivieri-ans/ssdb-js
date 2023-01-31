@@ -191,16 +191,79 @@ describe("List", () => {
     });
   });
 
+  describe("qrange", () => {
+    test("on an existing list valid offset/limit", async () => {
+      let resp = await ssdb.a_qpush("test", "marino", "sumo", "sirvano");
+      expect(resp).toBe(3);
+      resp = await ssdb.a_qrange("test", 0, 2);
+      expect(resp).toEqual(["marino", "sumo"]);
+      resp = await ssdb.a_qrange("test", 0, 200);
+      expect(resp).toEqual(["marino", "sumo", "sirvano"]);
+    });
+    test("on an existing list, exceeding offset", async () => {
+      let resp = await ssdb.a_qpush("test", "marino", "sumo", "sirvano");
+      expect(resp).toBe(3);
+      resp = await ssdb.a_qrange("test", 0, 2);
+      expect(resp).toEqual(["marino", "sumo"]);
+      resp = await ssdb.a_qrange("test", 100, 10);
+      expect(resp).toEqual([]);
+    });
+  });
+
   describe("qslice", () => {
-    // TODO
+    test("on an existing list valid start/end", async () => {
+      let resp = await ssdb.a_qpush("test", "marino", "sumo", "sirvano");
+      expect(resp).toBe(3);
+      resp = await ssdb.a_qslice("test", 0, 1);
+      expect(resp).toEqual(["marino", "sumo"]);
+    });
+    test("on an existing list valid start, exceeding end", async () => {
+      let resp = await ssdb.a_qpush("test", "marino", "sumo", "sirvano");
+      expect(resp).toBe(3);
+      resp = await ssdb.a_qslice("test", 0, 200);
+      // exceeding end is not considered
+      expect(resp).toEqual(["marino", "sumo", "sirvano"]);
+    });
+    test("on an existing list, exceeding start", async () => {
+      let resp = await ssdb.a_qpush("test", "marino", "sumo", "sirvano");
+      expect(resp).toBe(3);
+      resp = await ssdb.a_qslice("test", 200, 201);
+      expect(resp).toEqual([]);
+    });
   });
 
   describe("qtrim_front", () => {
-    // TODO
+    test("on an existing, size < list.length", async () => {
+      let resp = await ssdb.a_qpush("test", "marino", "sumo", "sirvano");
+      expect(resp).toBe(3);
+      resp = await ssdb.a_qtrim_front("test", 2);
+      expect(resp).toEqual(2);
+      resp = await ssdb.a_qrange("test", 0, 100);
+      expect(resp).toEqual(["sirvano"]);
+    });
+    test("on an existing, size > list.length", async () => {
+      let resp = await ssdb.a_qpush("test", "marino", "sumo", "sirvano");
+      expect(resp).toBe(3);
+      resp = await ssdb.a_qtrim_front("test", 200);
+      expect(resp).toEqual(3);
+    });
   });
 
   describe("qtrim_back", () => {
-    // TODO
+    test("on an existing, size < list.length", async () => {
+      let resp = await ssdb.a_qpush("test", "marino", "sumo", "sirvano");
+      expect(resp).toBe(3);
+      resp = await ssdb.a_qtrim_back("test", 2);
+      expect(resp).toEqual(2);
+      resp = await ssdb.a_qrange("test", 0, 100);
+      expect(resp).toEqual(["marino"]);
+    });
+    test("on an existing, size > list.length", async () => {
+      let resp = await ssdb.a_qpush("test", "marino", "sumo", "sirvano");
+      expect(resp).toBe(3);
+      resp = await ssdb.a_qtrim_back("test", 200);
+      expect(resp).toEqual(3);
+    });
   });
 
   describe("qlist", () => {
