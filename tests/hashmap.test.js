@@ -253,7 +253,15 @@ describe("Hashmap", () => {
   });
 
   describe("hrscan", () => {
-    //  TODO
+    // Like hscan, but in reverse order.
+    test("of an existing hashmap, default arguments", async () => {
+      let resp = await ssdb.a_hset("test", "marino", "sumo");
+      expect(resp).toBe(1);
+      resp = await ssdb.a_hset("test", "donna", "arcama");
+      expect(resp).toBe(1);
+      resp = await ssdb.a_hrscan("test");
+      expect(resp).toEqual({ donna: "arcama", marino: "sumo" });
+    });
   });
 
   describe("hclear", () => {
