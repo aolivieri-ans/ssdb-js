@@ -169,7 +169,7 @@ describe("Hashmap", () => {
       expect(resp).toBe(1);
       resp = await ssdb.a_hset("test2", "donna", "arcama");
       expect(resp).toBe(1);
-      resp = await ssdb.a_hlist();
+      resp = await ssdb.a_hrlist();
       expect(resp).toEqual(["test2", "test"]);
     });
   });
