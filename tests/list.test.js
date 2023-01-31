@@ -267,11 +267,61 @@ describe("List", () => {
   });
 
   describe("qlist", () => {
-    // TODO
+    test("with default arguments (no range/no limit)", async () => {
+      let resp = await ssdb.a_qpush("thekey", "marino", "sumo", "sirvano");
+      expect(resp).toBe(3);
+      resp = await ssdb.a_qpush("akey", "marino", "sumo", "sirvano");
+      expect(resp).toBe(3);
+      resp = await ssdb.a_qlist();
+      expect(resp).toEqual(["akey", "thekey"]);
+    });
+    test("with range (no limit)", async () => {
+      let resp = await ssdb.a_qpush("thekey", "marino", "sumo", "sirvano");
+      expect(resp).toBe(3);
+      resp = await ssdb.a_qpush("akey", "marino", "sumo", "sirvano");
+      expect(resp).toBe(3);
+      resp = await ssdb.a_qlist("a", "s");
+      expect(resp).toEqual(["akey"]);
+    });
+    test("with range and limit", async () => {
+      let resp = await ssdb.a_qpush("thekey", "marino", "sumo", "sirvano");
+      expect(resp).toBe(3);
+      resp = await ssdb.a_qpush("akey", "marino", "sumo", "sirvano");
+      expect(resp).toBe(3);
+      resp = await ssdb.a_qpush("zikey", "marino", "sumo", "sirvano");
+      expect(resp).toBe(3);
+      resp = await ssdb.a_qlist("A", "z", 1);
+      expect(resp).toEqual(["akey"]);
+    });
   });
 
   describe("qrlist", () => {
-    // TODO
+    test("with default arguments (no range/no limit)", async () => {
+      let resp = await ssdb.a_qpush("thekey", "marino", "sumo", "sirvano");
+      expect(resp).toBe(3);
+      resp = await ssdb.a_qpush("akey", "marino", "sumo", "sirvano");
+      expect(resp).toBe(3);
+      resp = await ssdb.a_qrlist();
+      expect(resp).toEqual(["thekey", "akey"]);
+    });
+    test("with range (no limit)", async () => {
+      let resp = await ssdb.a_qpush("thekey", "marino", "sumo", "sirvano");
+      expect(resp).toBe(3);
+      resp = await ssdb.a_qpush("akey", "marino", "sumo", "sirvano");
+      expect(resp).toBe(3);
+      resp = await ssdb.a_qrlist("z", "A");
+      expect(resp).toEqual(["thekey", "akey"]);
+    });
+    test("with range and limit", async () => {
+      let resp = await ssdb.a_qpush("thekey", "marino", "sumo", "sirvano");
+      expect(resp).toBe(3);
+      resp = await ssdb.a_qpush("akey", "marino", "sumo", "sirvano");
+      expect(resp).toBe(3);
+      resp = await ssdb.a_qpush("zikey", "marino", "sumo", "sirvano");
+      expect(resp).toBe(3);
+      resp = await ssdb.a_qrlist("z", "A", 1);
+      expect(resp).toEqual(["thekey"]);
+    });
   });
 });
 
