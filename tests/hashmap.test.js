@@ -204,7 +204,19 @@ describe("Hashmap", () => {
   });
 
   describe("hgetall", () => {
-    //  TODO
+    // Returns the whole hash, as an array of strings indexed by strings.
+    test("of an existing hashmap", async () => {
+      let resp = await ssdb.a_hset("test", "marino", "sumo");
+      expect(resp).toBe(1);
+      resp = await ssdb.a_hset("test", "donna", "arcama");
+      expect(resp).toBe(1);
+      resp = await ssdb.a_hgetall("test");
+      expect(resp).toEqual({ donna: "arcama", marino: "sumo" });
+    });
+    test("of a non existing hashmap", async () => {
+      resp = await ssdb.a_hgetall("nope");
+      expect(resp).toEqual({});
+    });
   });
 
   describe("hscan", () => {
