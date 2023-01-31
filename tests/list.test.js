@@ -65,29 +65,29 @@ describe("List", () => {
     });
   });
 
-  describe("qpop_back", () => {
+  describe("qpop_back (qpop)", () => {
     test("on an existing list, size=1", async () => {
       let resp = await ssdb.a_qpush_back("test", "marino", "sumo", "sirvano");
       expect(resp).toBe(3);
-      resp = await ssdb.a_qpop_back("test");
+      resp = await ssdb.a_qpop("test");
       expect(resp).toEqual("sirvano");
     });
     test("on an existing list, size=2", async () => {
       let resp = await ssdb.a_qpush_back("test", "marino", "sumo", "sirvano");
       expect(resp).toBe(3);
-      resp = await ssdb.a_qpop_back("test", 2);
+      resp = await ssdb.a_qpop("test", 2);
       expect(resp).toEqual(["sirvano", "sumo"]);
     });
     test("on a non existing list", async () => {
-      expect(ssdb.a_qpop_back("test")).rejects.toEqual("not_found");
+      expect(ssdb.a_qpop("test")).rejects.toEqual("not_found");
     });
     test("on an empty list", async () => {
       let resp = await ssdb.a_qpush_back("test", "marino");
       expect(resp).toBe(1);
-      resp = await ssdb.a_qpop_back("test");
+      resp = await ssdb.a_qpop("test");
       expect(resp).toEqual("marino");
       // differs from doc https://ssdb.io/docs/commands/qpop_back.html
-      expect(ssdb.a_qpop_front("test")).rejects.toEqual("not_found");
+      expect(ssdb.a_qpop("test")).rejects.toEqual("not_found");
     });
     test("on an existing list, size > list size", async () => {
       let resp = await ssdb.a_qpush_back("test", "marino", "sumo");
@@ -97,20 +97,30 @@ describe("List", () => {
     });
   });
 
-  describe("qpush", () => {
-    // TODO
-  });
-
-  describe("qpop", () => {
-    // TODO
-  });
-
   describe("qfront", () => {
-    // TODO
+    test("on an existing list", async () => {
+      let resp = await ssdb.a_qpush("test", "marino", "sumo", "sirvano");
+      expect(resp).toBe(3);
+      resp = await ssdb.a_qfront("test");
+      expect(resp).toEqual("marino");
+    });
+    test("on a non-existing list", async () => {
+      // Differs from https://ssdb.io/docs/commands/qfront.html
+      expect(ssdb.a_qpop("test")).rejects.toEqual("not_found");
+    });
   });
 
   describe("qback", () => {
-    // TODO
+    test("on an existing list", async () => {
+      let resp = await ssdb.a_qpush("test", "marino", "sumo", "sirvano");
+      expect(resp).toBe(3);
+      resp = await ssdb.a_qback("test");
+      expect(resp).toEqual("sirvano");
+    });
+    test("on a non-existing list", async () => {
+      // Differs from https://ssdb.io/docs/commands/qfront.html
+      expect(ssdb.a_qback("test")).rejects.toEqual("not_found");
+    });
   });
 
   describe("qsize", () => {
