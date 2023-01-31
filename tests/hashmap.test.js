@@ -220,7 +220,36 @@ describe("Hashmap", () => {
   });
 
   describe("hscan", () => {
-    //  TODO
+    // List key-value pairs of a hashmap with keys in range (key_start, key_end].
+    test("of an existing hashmap, default arguments", async () => {
+      let resp = await ssdb.a_hset("test", "marino", "sumo");
+      expect(resp).toBe(1);
+      resp = await ssdb.a_hset("test", "donna", "arcama");
+      expect(resp).toBe(1);
+      resp = await ssdb.a_hscan("test");
+      expect(resp).toEqual({ donna: "arcama", marino: "sumo" });
+    });
+    test("of an existing hashmap, with range arguments", async () => {
+      let resp = await ssdb.a_hset("test", "marino", "sumo");
+      expect(resp).toBe(1);
+      resp = await ssdb.a_hset("test", "donna", "arcama");
+      expect(resp).toBe(1);
+      resp = await ssdb.a_hscan("test", "A", "e");
+      expect(resp).toEqual({ donna: "arcama" });
+    });
+    test("of an existing hashmap, with range arguments and limit", async () => {
+      let resp = await ssdb.a_hset("test", "marino", "sumo");
+      expect(resp).toBe(1);
+      resp = await ssdb.a_hset("test", "donna", "arcama");
+      expect(resp).toBe(1);
+      resp = await ssdb.a_hscan("test", "A", "z", 1);
+      expect(resp).toEqual({ donna: "arcama" });
+    });
+
+    test("of a non existing hashmap", async () => {
+      resp = await ssdb.a_hgetall("nope");
+      expect(resp).toEqual({});
+    });
   });
 
   describe("hrscan", () => {
