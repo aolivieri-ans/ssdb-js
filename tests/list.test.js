@@ -124,19 +124,71 @@ describe("List", () => {
   });
 
   describe("qsize", () => {
-    // TODO
+    test("on an existing list", async () => {
+      let resp = await ssdb.a_qpush("test", "marino", "sumo", "sirvano");
+      expect(resp).toBe(3);
+      resp = await ssdb.a_qsize("test");
+      expect(resp).toEqual(3);
+    });
+    test("on a non-existing list", async () => {
+      resp = await ssdb.a_qsize("nope");
+      expect(resp).toEqual(0);
+    });
   });
 
   describe("qclear", () => {
-    // TODO
+    test("on an existing list", async () => {
+      let resp = await ssdb.a_qpush("test", "marino", "sumo", "sirvano");
+      expect(resp).toBe(3);
+      resp = await ssdb.a_qclear("test");
+      expect(resp).toEqual("ok");
+    });
+    test("on a non-existing list", async () => {
+      resp = await ssdb.a_qclear("nope");
+      // Differs from doc https://ssdb.io/docs/commands/qclear.html
+      expect(resp).toEqual("ok");
+    });
   });
 
   describe("qget", () => {
-    // TODO
+    test("on an existing list, valid index", async () => {
+      let resp = await ssdb.a_qpush("test", "marino", "sumo", "sirvano");
+      expect(resp).toBe(3);
+      resp = await ssdb.a_qget("test", 0);
+      expect(resp).toEqual("marino");
+      resp = await ssdb.a_qget("test", 1);
+      expect(resp).toEqual("sumo");
+      resp = await ssdb.a_qget("test", 2);
+      expect(resp).toEqual("sirvano");
+    });
+    test("on an existing list, out of range index", async () => {
+      let resp = await ssdb.a_qpush("test", "marino", "sumo", "sirvano");
+      expect(resp).toBe(3);
+      expect(ssdb.a_qget("test", 3)).rejects.toEqual("not_found");
+    });
+    test("on a non existing list", async () => {
+      expect(ssdb.a_qget("nope", 0)).rejects.toEqual("not_found");
+    });
   });
 
   describe("qset", () => {
-    // TODO
+    test("on an existing list, valid index", async () => {
+      let resp = await ssdb.a_qpush("test", "marino", "sumo", "sirvano");
+      expect(resp).toBe(3);
+      resp = await ssdb.a_qset("test", 0, "replaced");
+      expect(resp).toEqual("ok");
+      resp = await ssdb.a_qget("test", 0);
+      expect(resp).toEqual("replaced");
+    });
+    test("on an existing list, out of range index", async () => {
+      let resp = await ssdb.a_qpush("test", "marino", "sumo", "sirvano");
+      expect(resp).toBe(3);
+      expect(ssdb.a_qset("test", 10, "replaced")).rejects.toEqual("error");
+    });
+
+    test("on a non existing list", async () => {
+      expect(ssdb.a_qset("nope", 0, "dora")).rejects.toEqual("error");
+    });
   });
 
   describe("qslice", () => {
