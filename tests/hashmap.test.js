@@ -38,13 +38,30 @@ describe("Hashmap", () => {
       expect(resp).toBe(1);
       expect(ssdb.a_hget("test", "sirvano")).rejects.toEqual("not_found");
     });
-    test("missing key of an missing hashmap", async () => {
+    test("missing key of a missing hashmap", async () => {
       expect(ssdb.a_hget("test", "sirvano")).rejects.toEqual("not_found");
     });
   });
 
   describe("hdel", () => {
-    //  TODO
+    // If the key exists, return 1, otherwise return 0
+    test("existing key of an existing hashmap", async () => {
+      let resp = await ssdb.a_hset("test", "marino", "sumo");
+      expect(resp).toBe(1);
+      resp = await ssdb.a_hdel("test", "marino");
+      expect(resp).toBe(1);
+      expect(ssdb.a_hget("test", "marino")).rejects.toEqual("not_found");
+    });
+    test("non existing key of an existing hashmap", async () => {
+      let resp = await ssdb.a_hset("test", "marino", "sumo");
+      expect(resp).toBe(1);
+      resp = await ssdb.a_hdel("test", "sirvano");
+      expect(resp).toBe(0);
+    });
+    test("non existing hashmap name", async () => {
+      resp = await ssdb.a_hdel("nonexistent", "sirvano");
+      expect(resp).toBe(0);
+    });
   });
 
   describe("hincr", () => {
