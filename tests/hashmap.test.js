@@ -95,7 +95,23 @@ describe("Hashmap", () => {
   });
 
   describe("hexists", () => {
-    //  TODO
+    // If the key exists, return 1, otherwise return 0
+    test("existing name, existing key", async () => {
+      let resp = await ssdb.a_hset("test", "marino", "sumo");
+      expect(resp).toBe(1);
+      resp = await ssdb.a_hexists("test", "marino");
+      expect(resp).toBe(1);
+    });
+    test("existing name, non-existing key", async () => {
+      let resp = await ssdb.a_hset("test", "marino", "sumo");
+      expect(resp).toBe(1);
+      resp = await ssdb.a_hexists("test", "sirvano");
+      expect(resp).toBe(0);
+    });
+    test("non-existing name", async () => {
+      resp = await ssdb.a_hexists("test", "marino");
+      expect(resp).toBe(0);
+    });
   });
 
   describe("hsize", () => {
