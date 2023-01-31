@@ -276,13 +276,26 @@ describe("Hashmap", () => {
     });
 
     test("of a non existing hashmap", async () => {
-      resp = await ssdb.a_hclear("test");
+      resp = await ssdb.a_hclear("nope");
       expect(resp).toEqual(0);
     });
   });
 
   describe("multi_hset", () => {
-    //  TODO
+    // returns false on error, other values indicate OK.
+    let testObjects = {
+      Yale: "Dioma",
+      Donna: "Arcama",
+      Otta: "Migno",
+      Lona: "Zocco",
+      Nara: "Stabbocchi",
+    };
+    test("multi_set, non empty key/value set", async () => {
+      let resp = await ssdb.a_multi_hset("test", testObjects);
+      expect(resp).toEqual("ok");
+      resp = await ssdb.a_hgetall("test");
+      expect(resp).toEqual(testObjects);
+    });
   });
 
   describe("multi_hget", () => {
