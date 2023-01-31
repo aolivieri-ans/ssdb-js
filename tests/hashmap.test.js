@@ -115,11 +115,51 @@ describe("Hashmap", () => {
   });
 
   describe("hsize", () => {
-    //  TODO
+    // Return the number of key-value pairs in the hashmap.
+    test("existing hashmap", async () => {
+      let resp = await ssdb.a_hset("test", "marino", "sumo");
+      expect(resp).toBe(1);
+      resp = await ssdb.a_hset("test", "donna", "arcama");
+      expect(resp).toBe(1);
+      resp = await ssdb.a_hsize("test");
+      expect(resp).toBe(2);
+    });
+
+    test("non existing hashmap", async () => {
+      // if hashmap doesn't exists returns 0 anyway
+      resp = await ssdb.a_hsize("nonexistent");
+      expect(resp).toBe(0);
+    });
   });
 
   describe("hlist", () => {
-    //  TODO
+    // List hashmap names in range (name_start, name_end].
+    test("with default arguments", async () => {
+      let resp = await ssdb.a_hset("test", "marino", "sumo");
+      expect(resp).toBe(1);
+      resp = await ssdb.a_hset("test2", "donna", "arcama");
+      expect(resp).toBe(1);
+      resp = await ssdb.a_hlist();
+      expect(resp).toEqual(["test", "test2"]);
+    });
+
+    test("with range argument", async () => {
+      let resp = await ssdb.a_hset("test", "marino", "sumo");
+      expect(resp).toBe(1);
+      resp = await ssdb.a_hset("test2", "donna", "arcama");
+      expect(resp).toBe(1);
+      resp = await ssdb.a_hlist("A", "B");
+      expect(resp).toEqual([]);
+    });
+
+    test("with range and limit argument", async () => {
+      let resp = await ssdb.a_hset("test", "marino", "sumo");
+      expect(resp).toBe(1);
+      resp = await ssdb.a_hset("test2", "donna", "arcama");
+      expect(resp).toBe(1);
+      resp = await ssdb.a_hlist("", "", 1);
+      expect(resp).toEqual(["test"]);
+    });
   });
 
   describe("hrlist", () => {
