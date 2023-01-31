@@ -290,7 +290,7 @@ describe("Hashmap", () => {
       Lona: "Zocco",
       Nara: "Stabbocchi",
     };
-    test("multi_set, non empty key/value set", async () => {
+    test("on a new (non-existing) hashmap, non empty key/value set", async () => {
       let resp = await ssdb.a_multi_hset("test", testObjects);
       expect(resp).toEqual("ok");
       resp = await ssdb.a_hgetall("test");
@@ -299,7 +299,32 @@ describe("Hashmap", () => {
   });
 
   describe("multi_hget", () => {
-    //  TODO
+    let testObjects = {
+      Yale: "Dioma",
+      Donna: "Arcama",
+      Otta: "Migno",
+      Lona: "Zocco",
+      Nara: "Stabbocchi",
+    };
+    test("of an existing hashmap, non-empty key set", async () => {
+      let resp = await ssdb.a_multi_hset("test", testObjects);
+      expect(resp).toEqual("ok");
+      resp = await ssdb.a_multi_hget("test", ["Yale", "Donna"]);
+      expect(resp).toEqual({
+        Yale: "Dioma",
+        Donna: "Arcama",
+      });
+    });
+    test("of an existing hashmap, empty key set", async () => {
+      let resp = await ssdb.a_multi_hset("test", testObjects);
+      expect(resp).toEqual("ok");
+      resp = await ssdb.a_multi_hget("test", []);
+      expect(resp).toEqual({});
+    });
+    test("of a non existing hashmap", async () => {
+      resp = await ssdb.a_multi_hget("test", ["marino"]);
+      expect(resp).toEqual({});
+    });
   });
 
   describe("multi_hdel", () => {
