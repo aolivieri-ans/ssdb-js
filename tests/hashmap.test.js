@@ -328,7 +328,26 @@ describe("Hashmap", () => {
   });
 
   describe("multi_hdel", () => {
-    //  TODO
+    let testObjects = {
+      Yale: "Dioma",
+      Donna: "Arcama",
+      Otta: "Migno",
+      Lona: "Zocco",
+      Nara: "Stabbocchi",
+    };
+    test("of an existing hashmap, non-empty key set", async () => {
+      let resp = await ssdb.a_multi_hset("test", testObjects);
+      expect(resp).toEqual("ok");
+      resp = await ssdb.a_multi_hdel("test", ["Yale", "Donna"]);
+      expect(resp).toBeGreaterThan(0);
+
+      resp = await ssdb.a_hgetall("test");
+      expect(resp).toEqual({
+        Otta: "Migno",
+        Lona: "Zocco",
+        Nara: "Stabbocchi",
+      });
+    });
   });
 });
 
