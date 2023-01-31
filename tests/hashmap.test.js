@@ -265,7 +265,20 @@ describe("Hashmap", () => {
   });
 
   describe("hclear", () => {
-    //  TODO
+    // Returns the number of key deleted in that hashmap.
+    test("of an existing hashmap", async () => {
+      let resp = await ssdb.a_hset("test", "marino", "sumo");
+      expect(resp).toBe(1);
+      resp = await ssdb.a_hset("test", "donna", "arcama");
+      expect(resp).toBe(1);
+      resp = await ssdb.a_hclear("test");
+      expect(resp).toEqual(2);
+    });
+
+    test("of a non existing hashmap", async () => {
+      resp = await ssdb.a_hclear("test");
+      expect(resp).toEqual(0);
+    });
   });
 
   describe("multi_hset", () => {
