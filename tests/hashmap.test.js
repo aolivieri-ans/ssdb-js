@@ -175,7 +175,32 @@ describe("Hashmap", () => {
   });
 
   describe("hkeys", () => {
-    //  TODO
+    // List keys of a hashmap in range (key_start, key_end]
+    test("with default arguments", async () => {
+      let resp = await ssdb.a_hset("test", "marino", "sumo");
+      expect(resp).toBe(1);
+      resp = await ssdb.a_hset("test", "donna", "arcama");
+      expect(resp).toBe(1);
+      resp = await ssdb.a_hkeys("test");
+      expect(resp).toEqual(["donna", "marino"]);
+    });
+    test("with range argument", async () => {
+      let resp = await ssdb.a_hset("test", "marino", "sumo");
+      expect(resp).toBe(1);
+      resp = await ssdb.a_hset("test", "donna", "arcama");
+      expect(resp).toBe(1);
+      resp = await ssdb.a_hkeys("test", "e", "z");
+      expect(resp).toEqual(["marino"]);
+    });
+
+    test("with range and limit argument", async () => {
+      let resp = await ssdb.a_hset("test", "marino", "sumo");
+      expect(resp).toBe(1);
+      resp = await ssdb.a_hset("test", "donna", "arcama");
+      expect(resp).toBe(1);
+      resp = await ssdb.a_hkeys("test", "", "", 1);
+      expect(resp).toEqual(["donna"]);
+    });
   });
 
   describe("hgetall", () => {
