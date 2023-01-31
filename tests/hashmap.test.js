@@ -65,7 +65,33 @@ describe("Hashmap", () => {
   });
 
   describe("hincr", () => {
-    //  TODO
+    // returns new value. If the old value cannot be converted to an integer, returns error Status Code.
+    test("existing name, existing key with numerical value, incr=1", async () => {
+      let resp = await ssdb.a_hset("test", "marino", "1");
+      expect(resp).toBe(1);
+      resp = await ssdb.a_hincr("test", "marino");
+      expect(resp).toBe(2);
+    });
+    test("existing name, existing key with numerical value, incr>1", async () => {
+      let resp = await ssdb.a_hset("test", "marino", "1");
+      expect(resp).toBe(1);
+      resp = await ssdb.a_hincr("test", "marino", 10);
+      expect(resp).toBe(11);
+      resp = await ssdb.a_hget("test", "marino");
+      expect(resp).toBe("11");
+    });
+    test("existing name, existing key with non-numerical value", async () => {
+      let resp = await ssdb.a_hset("test", "marino", "sumo");
+      expect(resp).toBe(1);
+      expect(ssdb.a_hincr("test", "marino")).rejects.toEqual("error");
+    });
+    test("existing name, non-existing key", async () => {
+      // if the key does not exist it is created
+      resp = await ssdb.a_hincr("test", "sirvano", 2);
+      expect(resp).toBe(2);
+      resp = await ssdb.a_hget("test", "sirvano");
+      expect(resp).toBe("2");
+    });
   });
 
   describe("hexists", () => {
