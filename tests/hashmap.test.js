@@ -163,7 +163,15 @@ describe("Hashmap", () => {
   });
 
   describe("hrlist", () => {
-    //  TODO
+    // Like hlist, but in reverse order.
+    test("with default arguments", async () => {
+      let resp = await ssdb.a_hset("test", "marino", "sumo");
+      expect(resp).toBe(1);
+      resp = await ssdb.a_hset("test2", "donna", "arcama");
+      expect(resp).toBe(1);
+      resp = await ssdb.a_hlist();
+      expect(resp).toEqual(["test2", "test"]);
+    });
   });
 
   describe("hkeys", () => {
