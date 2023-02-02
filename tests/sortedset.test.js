@@ -7,7 +7,8 @@ let ssdb = SSDB.connect(cfg, (wtf) => wtf);
 describe("sortedset", () => {
   describe("sorteset_set", () => {
     // false on error, other values indicate OK.
-    test("zset/get", async () => {
+    describe("zset/get", () => {
+      /*
       let resp = await ssdb.a_zset("test", "marino", 2);
       expect(resp).toBe(1);
       // resp = await ssdb.a_zset("test1", "marino",2);
@@ -92,6 +93,205 @@ describe("sortedset", () => {
 
       resp = await ssdb.a_zclear("clear");
       expect(resp).toBe(0);
+      */
+    });
+
+    describe("zset", () => {
+      test("a non existing value", async () => {
+        expect(ssdb.a_zset("test", "marino", 2)).resolves.toBe(1);
+        expect(ssdb.a_zset("test", "sumo", 2)).resolves.toBe(1);
+      });
+      test("an existing value", async () => {
+        expect(ssdb.a_zset("test", "marino", 2)).resolves.toBe(1);
+        expect(ssdb.a_zset("test", "marino", 3)).resolves.toBe(0);
+      });
+    });
+
+    describe("zget", () => {
+      test("an existing key", async () => {
+        expect(ssdb.a_zset("test", "marino", 42)).resolves.toBe(1);
+        expect(ssdb.a_zget("test", "marino")).resolves.toBe(42);
+      });
+      test("a non existing key of an existing set", async () => {
+        expect(ssdb.a_zget("test", "marino")).rejects.toEqual("not_found");
+      });
+      test("on a non existing set", async () => {
+        expect(ssdb.a_zget("nope", "marino")).rejects.toEqual("not_found");
+      });
+    });
+
+    describe("zdel", () => {
+      test("an existing key", async () => {
+        // returns 1 if key existed
+        expect(ssdb.a_zset("test", "marino", 42)).resolves.toBe(1);
+        expect(ssdb.a_zdel("test", "marino")).resolves.toBe(1);
+      });
+      test("a non existing key of an existing set", async () => {
+        // returns 0 if key didn't exist
+        expect(ssdb.a_zset("test", "marino", 42)).resolves.toBe(1);
+        expect(ssdb.a_zdel("test", "sumo")).resolves.toBe(0);
+      });
+      test("a non existing set", async () => {
+        expect(ssdb.a_zdel("nope", "marino")).resolves.toBe(0);
+      });
+    });
+
+    describe("zincr", () => {
+      test("an existing key", async () => {
+        // returns 1 if key exists
+        expect(ssdb.a_zset("test", "marino", 42)).resolves.toBe(1);
+        expect(ssdb.a_zincr("test", "marino", 1)).resolves.toBe(0);
+        expect(ssdb.a_zget("test", "marino")).resolves.toBe(43);
+        expect(ssdb.a_zincr("test", "marino", 10)).resolves.toBe(0);
+        expect(ssdb.a_zget("test", "marino")).resolves.toBe(53);
+      });
+      test("an non-existing key", async () => {
+        // If key not exists, returns 0 and auto-create the key
+        expect(ssdb.a_zincr("test", "marino", 10)).resolves.toBe(0);
+        expect(ssdb.a_zget("test", "marino")).resolves.toBe(10);
+      });
+    });
+
+    describe("zexists", () => {
+      test("an existing key", async () => {
+        // returns 1 if key exists
+        expect(ssdb.a_zset("test", "marino", 42)).resolves.toBe(1);
+        expect(ssdb.a_zexists("test", "marino")).resolves.toBe(1);
+      });
+      test("a non-existing key", async () => {
+        // returns 0 if key does not exists
+        expect(ssdb.a_zexists("test", "nope")).resolves.toBe(0);
+      });
+      test("a non-existing set", async () => {
+        // returns 0 if key does not exists
+        expect(ssdb.a_zexists("nope", "nope")).resolves.toBe(0);
+      });
+    });
+
+    describe("zsize", () => {
+      test("an existing set", async () => {
+        expect(ssdb.a_zset("test", "marino", 1)).resolves.toBe(1);
+        expect(ssdb.a_zset("test", "sumo", 2)).resolves.toBe(1);
+        expect(ssdb.a_zset("test", "sirvano", 3)).resolves.toBe(1);
+        expect(ssdb.a_zset("test", "dora", 3)).resolves.toBe(1);
+        expect(ssdb.a_zsize("test")).resolves.toBe(4);
+      });
+      test("a non-existing set", async () => {
+        expect(ssdb.a_zsize("nooope")).resolves.toBe(0);
+      });
+    });
+
+    describe("zlist", () => {
+      test("open range", async () => {
+        let keys = ["set1", "set2", "set3", "set4"];
+        keys.forEach((k) => {
+          expect(ssdb.a_zset(k, "marino", 1)).resolves.toBe(1);
+        });
+        expect(ssdb.a_zlist("", "")).resolves.toEqual(keys);
+      });
+      test("open range, limit=1", async () => {
+        let keys = ["set1", "set2", "set3", "set4"];
+        keys.forEach((k) => {
+          expect(ssdb.a_zset(k, "marino", 1)).resolves.toBe(1);
+        });
+        expect(ssdb.a_zlist("", "", 1)).resolves.toEqual(["set1"]);
+      });
+      test("with lower range (key_start)", async () => {
+        let keys = ["set1", "set2", "set3", "set4"];
+        keys.forEach((k) => {
+          expect(ssdb.a_zset(k, "marino", 1)).resolves.toBe(1);
+        });
+        // lower range is not inclusive
+        expect(ssdb.a_zlist("set1", "z")).resolves.toEqual(keys.slice(1));
+      });
+      test("with both lower range (key_start) and upper (key_end)", async () => {
+        let keys = ["set1", "set2", "set3", "set4"];
+        keys.forEach((k) => {
+          expect(ssdb.a_zset(k, "marino", 1)).resolves.toBe(1);
+        });
+        // lower range is not inclusive, upper is inclusive
+        expect(ssdb.a_zlist("set1", "set3")).resolves.toEqual(["set2", "set3"]);
+      });
+    });
+
+    describe("zrlist", () => {
+      // TODO
+    });
+
+    describe("zkeys", () => {
+      // TODO
+    });
+
+    describe("zscan", () => {
+      // TODO
+    });
+
+    describe("zrscan", () => {
+      // TODO
+    });
+
+    describe("zrank", () => {
+      // TODO
+    });
+
+    describe("zrank", () => {
+      // TODO
+    });
+
+    describe("zrrank", () => {
+      // TODO
+    });
+
+    describe("zrange", () => {
+      // TODO
+    });
+
+    describe("zrrange", () => {
+      // TODO
+    });
+
+    describe("zclear", () => {
+      // TODO
+    });
+
+    describe("zcount", () => {
+      // TODO
+    });
+
+    describe("zsum", () => {
+      // TODO
+    });
+
+    describe("zavg", () => {
+      // TODO
+    });
+
+    describe("zremrangebyrank", () => {
+      // TODO
+    });
+
+    describe("zremrangebyscore", () => {
+      // TODO
+    });
+
+    describe("zpop_front", () => {
+      // TODO
+    });
+
+    describe("zpop_back", () => {
+      // TODO
+    });
+
+    describe("multi_zset", () => {
+      // TODO
+    });
+
+    describe("multi_zget", () => {
+      // TODO
+    });
+
+    describe("multi_zdel", () => {
+      // TODO
     });
   });
 });
