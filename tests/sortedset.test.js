@@ -202,7 +202,7 @@ describe("sortedset", () => {
           expect(ssdb.a_zset(k, "marino", 1)).resolves.toBe(1);
         });
         // lower range is not inclusive
-        expect(ssdb.a_zlist("set1", "z")).resolves.toEqual(keys.slice(1));
+        expect(ssdb.a_zlist("set1", "")).resolves.toEqual(keys.slice(1));
       });
       test("with both lower range (key_start) and upper (key_end)", async () => {
         let keys = ["set1", "set2", "set3", "set4"];
@@ -220,23 +220,26 @@ describe("sortedset", () => {
         keys.forEach((k) => {
           expect(ssdb.a_zset(k, "marino", 1)).resolves.toBe(1);
         });
-        expect(ssdb.a_zlist("", "")).resolves.toEqual(keys.reverse());
+        expect(ssdb.a_zrlist("", "")).resolves.toEqual(keys.reverse());
       });
-      /*
+
       test("open range, limit=1", async () => {
         let keys = ["set1", "set2", "set3", "set4"];
         keys.forEach((k) => {
           expect(ssdb.a_zset(k, "marino", 1)).resolves.toBe(1);
         });
-        expect(ssdb.a_zlist("", "", 1)).resolves.toEqual(["set1"]);
+        expect(ssdb.a_zrlist("", "", 1)).resolves.toEqual(["set4"]);
       });
+
       test("with lower range (key_start)", async () => {
         let keys = ["set1", "set2", "set3", "set4"];
         keys.forEach((k) => {
           expect(ssdb.a_zset(k, "marino", 1)).resolves.toBe(1);
         });
         // lower range is not inclusive
-        expect(ssdb.a_zlist("set1", "z")).resolves.toEqual(keys.slice(1));
+        expect(ssdb.a_zrlist("set4", "")).resolves.toEqual(
+          keys.reverse().slice(1)
+        );
       });
       test("with both lower range (key_start) and upper (key_end)", async () => {
         let keys = ["set1", "set2", "set3", "set4"];
@@ -244,9 +247,11 @@ describe("sortedset", () => {
           expect(ssdb.a_zset(k, "marino", 1)).resolves.toBe(1);
         });
         // lower range is not inclusive, upper is inclusive
-        expect(ssdb.a_zlist("set1", "set3")).resolves.toEqual(["set2", "set3"]);
+        expect(ssdb.a_zrlist("set3", "set1")).resolves.toEqual([
+          "set2",
+          "set1",
+        ]);
       });
-      */
     });
 
     describe("zkeys", () => {
