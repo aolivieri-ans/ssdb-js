@@ -627,7 +627,7 @@ describe("sortedset", () => {
     });
 
     describe("multi_zset", () => {
-      test("with multiple values", async () => {
+      test("multiple key-value elements", async () => {
         expect(
           ssdb.a_multi_zset("test", { nonno_palmiro: 100, cagatone_joe: 1000 })
         ).resolves.toEqual(2);
@@ -639,11 +639,23 @@ describe("sortedset", () => {
     });
 
     describe("multi_zget", () => {
-      // TODO
+      test("multiple keys", async () => {
+        await setupTestZset();
+        expect(ssdb.a_multi_zget("test", ["marino", "sumo"])).resolves.toEqual([
+          { marino: 1 },
+          { sumo: 2 },
+        ]);
+      });
     });
 
     describe("multi_zdel", () => {
-      // TODO
+      test("multiple keys", async () => {
+        await setupTestZset();
+        expect(ssdb.a_multi_zget("test", ["marino", "sumo"])).resolves.toEqual([
+          { marino: 1 },
+          { sumo: 2 },
+        ]);
+      });
     });
   });
 });
