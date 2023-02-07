@@ -335,11 +335,11 @@ describe("Key-value", () => {
   describe("scan", () => {
     // false on error, otherwise an associative array containing the key-value pairs.
     let testObjects = {
-      Yale: "Dioma",
-      Donna: "Arcama",
-      Otta: "Migno",
-      Lona: "Zocco",
-      Nara: "Stabbocchi",
+      Mozzo: "Zozzo",
+      Cagatone: "Joe",
+      Oreste: "Pantegani",
+      Zio: "Panello",
+      Nonno: "Palmiro",
     };
 
     test("scan on multiple keys, valid range, limit=100", async () => {
@@ -357,7 +357,7 @@ describe("Key-value", () => {
         expect(resp).toBe("ok");
       }
       let resp = await ssdb.a_scan("A", "z", 1);
-      expect(resp).toEqual({ Donna: "Arcama" });
+      expect(resp).toEqual({ Cagatone: "Joe" });
     });
 
     test("scan on multiple keys, empty range", async () => {
@@ -373,11 +373,11 @@ describe("Key-value", () => {
   describe("rscan", () => {
     // Like scan, but in reverse order.
     let testObjects = {
-      Yale: "Dioma",
-      Donna: "Arcama",
-      Otta: "Migno",
-      Lona: "Zocco",
-      Nara: "Stabbocchi",
+      Mozzo: "Zozzo",
+      Cagatone: "Joe",
+      Oreste: "Pantegani",
+      Zio: "Panello",
+      Nonno: "Palmiro",
     };
     test("rscan on multiple keys, valid range, limit=100", async () => {
       for (const [key, value] of Object.entries(testObjects)) {
@@ -392,11 +392,11 @@ describe("Key-value", () => {
   describe("multi_set", () => {
     // returns false on error, other values indicate OK.
     let testObjects = {
-      Yale: "Dioma",
-      Donna: "Arcama",
-      Otta: "Migno",
-      Lona: "Zocco",
-      Nara: "Stabbocchi",
+      Mozzo: "Zozzo",
+      Cagatone: "Joe",
+      Oreste: "Pantegani",
+      Zio: "Panello",
+      Nonno: "Palmiro",
     };
     test("multi_set, non empty key/value set", async () => {
       let resp = await ssdb.a_multi_set(testObjects);
@@ -408,35 +408,35 @@ describe("Key-value", () => {
 
   describe("multi_get", () => {
     let testObjects = {
-      Yale: "Dioma",
-      Donna: "Arcama",
-      Otta: "Migno",
-      Lona: "Zocco",
-      Nara: "Stabbocchi",
+      Mozzo: "Zozzo",
+      Cagatone: "Joe",
+      Oreste: "Pantegani",
+      Zio: "Panello",
+      Nonno: "Palmiro",
     };
     test("multi_get", async () => {
       let resp = await ssdb.a_multi_set(testObjects);
       expect(resp).toEqual("ok");
-      resp = await ssdb.a_multi_get(["Yale", "Donna"]);
-      expect(resp).toEqual({ Yale: "Dioma", Donna: "Arcama" });
+      resp = await ssdb.a_multi_get(["Mozzo", "Cagatone"]);
+      expect(resp).toEqual({ Mozzo: "Zozzo", Cagatone: "Joe" });
     });
   });
 
   describe("multi_del", () => {
     let testObjects = {
-      Yale: "Dioma",
-      Donna: "Arcama",
-      Otta: "Migno",
-      Lona: "Zocco",
-      Nara: "Stabbocchi",
+      Mozzo: "Zozzo",
+      Cagatone: "Joe",
+      Oreste: "Pantegani",
+      Zio: "Panello",
+      Nonno: "Palmiro",
     };
     test("multi_del", async () => {
       let resp = await ssdb.a_multi_set(testObjects);
       expect(resp).toEqual("ok");
-      resp = await ssdb.a_multi_del(["Yale", "Donna", "Otta", "Lona"]);
+      resp = await ssdb.a_multi_del(["Mozzo", "Cagatone", "Oreste", "Zio"]);
       expect(resp).toEqual("ok");
       resp = await ssdb.a_scan("", "", 100);
-      expect(resp).toEqual({ Nara: "Stabbocchi" });
+      expect(resp).toEqual({ Nonno: "Palmiro" });
     });
   });
 });

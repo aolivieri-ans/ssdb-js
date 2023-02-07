@@ -119,7 +119,7 @@ describe("Hashmap", () => {
     test("existing hashmap", async () => {
       let resp = await ssdb.a_hset("test", "marino", "sumo");
       expect(resp).toBe(1);
-      resp = await ssdb.a_hset("test", "donna", "arcama");
+      resp = await ssdb.a_hset("test", "Mozzo", "Zozzo");
       expect(resp).toBe(1);
       resp = await ssdb.a_hsize("test");
       expect(resp).toBe(2);
@@ -137,7 +137,7 @@ describe("Hashmap", () => {
     test("with default arguments", async () => {
       let resp = await ssdb.a_hset("test", "marino", "sumo");
       expect(resp).toBe(1);
-      resp = await ssdb.a_hset("test2", "donna", "arcama");
+      resp = await ssdb.a_hset("test2", "Mozzo", "Zozzo");
       expect(resp).toBe(1);
       resp = await ssdb.a_hlist();
       expect(resp).toEqual(["test", "test2"]);
@@ -146,7 +146,7 @@ describe("Hashmap", () => {
     test("with range argument", async () => {
       let resp = await ssdb.a_hset("test", "marino", "sumo");
       expect(resp).toBe(1);
-      resp = await ssdb.a_hset("test2", "donna", "arcama");
+      resp = await ssdb.a_hset("test2", "Mozzo", "Zozzo");
       expect(resp).toBe(1);
       resp = await ssdb.a_hlist("A", "B");
       expect(resp).toEqual([]);
@@ -155,7 +155,7 @@ describe("Hashmap", () => {
     test("with range and limit argument", async () => {
       let resp = await ssdb.a_hset("test", "marino", "sumo");
       expect(resp).toBe(1);
-      resp = await ssdb.a_hset("test2", "donna", "arcama");
+      resp = await ssdb.a_hset("test2", "Mozzo", "Zozzo");
       expect(resp).toBe(1);
       resp = await ssdb.a_hlist("", "", 1);
       expect(resp).toEqual(["test"]);
@@ -167,7 +167,7 @@ describe("Hashmap", () => {
     test("with default arguments", async () => {
       let resp = await ssdb.a_hset("test", "marino", "sumo");
       expect(resp).toBe(1);
-      resp = await ssdb.a_hset("test2", "donna", "arcama");
+      resp = await ssdb.a_hset("test2", "Mozzo", "Zozzo");
       expect(resp).toBe(1);
       resp = await ssdb.a_hrlist();
       expect(resp).toEqual(["test2", "test"]);
@@ -179,15 +179,15 @@ describe("Hashmap", () => {
     test("with default arguments", async () => {
       let resp = await ssdb.a_hset("test", "marino", "sumo");
       expect(resp).toBe(1);
-      resp = await ssdb.a_hset("test", "donna", "arcama");
+      resp = await ssdb.a_hset("test", "Mozzo", "Zozzo");
       expect(resp).toBe(1);
       resp = await ssdb.a_hkeys("test");
-      expect(resp).toEqual(["donna", "marino"]);
+      expect(resp).toEqual(["Mozzo", "marino"]);
     });
     test("with range argument", async () => {
       let resp = await ssdb.a_hset("test", "marino", "sumo");
       expect(resp).toBe(1);
-      resp = await ssdb.a_hset("test", "donna", "arcama");
+      resp = await ssdb.a_hset("test", "Mozzo", "Zozzo");
       expect(resp).toBe(1);
       resp = await ssdb.a_hkeys("test", "e", "z");
       expect(resp).toEqual(["marino"]);
@@ -196,10 +196,10 @@ describe("Hashmap", () => {
     test("with range and limit argument", async () => {
       let resp = await ssdb.a_hset("test", "marino", "sumo");
       expect(resp).toBe(1);
-      resp = await ssdb.a_hset("test", "donna", "arcama");
+      resp = await ssdb.a_hset("test", "Mozzo", "Zozzo");
       expect(resp).toBe(1);
       resp = await ssdb.a_hkeys("test", "", "", 1);
-      expect(resp).toEqual(["donna"]);
+      expect(resp).toEqual(["Mozzo"]);
     });
   });
 
@@ -208,10 +208,10 @@ describe("Hashmap", () => {
     test("of an existing hashmap", async () => {
       let resp = await ssdb.a_hset("test", "marino", "sumo");
       expect(resp).toBe(1);
-      resp = await ssdb.a_hset("test", "donna", "arcama");
+      resp = await ssdb.a_hset("test", "Mozzo", "Zozzo");
       expect(resp).toBe(1);
       resp = await ssdb.a_hgetall("test");
-      expect(resp).toEqual({ donna: "arcama", marino: "sumo" });
+      expect(resp).toEqual({ Mozzo: "Zozzo", marino: "sumo" });
     });
     test("of a non existing hashmap", async () => {
       resp = await ssdb.a_hgetall("nope");
@@ -224,26 +224,26 @@ describe("Hashmap", () => {
     test("of an existing hashmap, default arguments", async () => {
       let resp = await ssdb.a_hset("test", "marino", "sumo");
       expect(resp).toBe(1);
-      resp = await ssdb.a_hset("test", "donna", "arcama");
+      resp = await ssdb.a_hset("test", "Mozzo", "Zozzo");
       expect(resp).toBe(1);
       resp = await ssdb.a_hscan("test");
-      expect(resp).toEqual({ donna: "arcama", marino: "sumo" });
+      expect(resp).toEqual({ Mozzo: "Zozzo", marino: "sumo" });
     });
     test("of an existing hashmap, with range arguments", async () => {
       let resp = await ssdb.a_hset("test", "marino", "sumo");
       expect(resp).toBe(1);
-      resp = await ssdb.a_hset("test", "donna", "arcama");
+      resp = await ssdb.a_hset("test", "Mozzo", "Zozzo");
       expect(resp).toBe(1);
       resp = await ssdb.a_hscan("test", "A", "e");
-      expect(resp).toEqual({ donna: "arcama" });
+      expect(resp).toEqual({ Mozzo: "Zozzo" });
     });
     test("of an existing hashmap, with range arguments and limit", async () => {
       let resp = await ssdb.a_hset("test", "marino", "sumo");
       expect(resp).toBe(1);
-      resp = await ssdb.a_hset("test", "donna", "arcama");
+      resp = await ssdb.a_hset("test", "Mozzo", "Zozzo");
       expect(resp).toBe(1);
       resp = await ssdb.a_hscan("test", "A", "z", 1);
-      expect(resp).toEqual({ donna: "arcama" });
+      expect(resp).toEqual({ Mozzo: "Zozzo" });
     });
 
     test("of a non existing hashmap", async () => {
@@ -257,10 +257,10 @@ describe("Hashmap", () => {
     test("of an existing hashmap, default arguments", async () => {
       let resp = await ssdb.a_hset("test", "marino", "sumo");
       expect(resp).toBe(1);
-      resp = await ssdb.a_hset("test", "donna", "arcama");
+      resp = await ssdb.a_hset("test", "Mozzo", "Zozzo");
       expect(resp).toBe(1);
       resp = await ssdb.a_hrscan("test");
-      expect(resp).toEqual({ donna: "arcama", marino: "sumo" });
+      expect(resp).toEqual({ Mozzo: "Zozzo", marino: "sumo" });
     });
   });
 
@@ -269,7 +269,7 @@ describe("Hashmap", () => {
     test("of an existing hashmap", async () => {
       let resp = await ssdb.a_hset("test", "marino", "sumo");
       expect(resp).toBe(1);
-      resp = await ssdb.a_hset("test", "donna", "arcama");
+      resp = await ssdb.a_hset("test", "Mozzo", "Zozzo");
       expect(resp).toBe(1);
       resp = await ssdb.a_hclear("test");
       expect(resp).toEqual(2);
@@ -284,11 +284,11 @@ describe("Hashmap", () => {
   describe("multi_hset", () => {
     // returns false on error, other values indicate OK.
     let testObjects = {
-      Yale: "Dioma",
-      Donna: "Arcama",
-      Otta: "Migno",
-      Lona: "Zocco",
-      Nara: "Stabbocchi",
+      Nonno: "Palmiro",
+      Mozzo: "Zozzo",
+      Oreste: "Pantegani",
+      Cagatone: "Joe",
+      Marino: "Sumo",
     };
     test("on a new (non-existing) hashmap, non empty key/value set", async () => {
       let resp = await ssdb.a_multi_hset("test", testObjects);
@@ -300,19 +300,19 @@ describe("Hashmap", () => {
 
   describe("multi_hget", () => {
     let testObjects = {
-      Yale: "Dioma",
-      Donna: "Arcama",
-      Otta: "Migno",
-      Lona: "Zocco",
-      Nara: "Stabbocchi",
+      Nonno: "Palmiro",
+      Mozzo: "Zozzo",
+      Oreste: "Pantegani",
+      Cagatone: "Joe",
+      Marino: "Sumo",
     };
     test("of an existing hashmap, non-empty key set", async () => {
       let resp = await ssdb.a_multi_hset("test", testObjects);
       expect(resp).toEqual("ok");
-      resp = await ssdb.a_multi_hget("test", ["Yale", "Donna"]);
+      resp = await ssdb.a_multi_hget("test", ["Nonno", "Mozzo"]);
       expect(resp).toEqual({
-        Yale: "Dioma",
-        Donna: "Arcama",
+        Nonno: "Palmiro",
+        Mozzo: "Zozzo",
       });
     });
     test("of an existing hashmap, empty key set", async () => {
@@ -329,23 +329,23 @@ describe("Hashmap", () => {
 
   describe("multi_hdel", () => {
     let testObjects = {
-      Yale: "Dioma",
-      Donna: "Arcama",
-      Otta: "Migno",
-      Lona: "Zocco",
-      Nara: "Stabbocchi",
+      Nonno: "Palmiro",
+      Mozzo: "Zozzo",
+      Oreste: "Pantegani",
+      Cagatone: "Joe",
+      Marino: "Sumo",
     };
     test("of an existing hashmap, non-empty key set", async () => {
       let resp = await ssdb.a_multi_hset("test", testObjects);
       expect(resp).toEqual("ok");
-      resp = await ssdb.a_multi_hdel("test", ["Yale", "Donna"]);
+      resp = await ssdb.a_multi_hdel("test", ["Nonno", "Mozzo"]);
       expect(resp).toBeGreaterThan(0);
 
       resp = await ssdb.a_hgetall("test");
       expect(resp).toEqual({
-        Otta: "Migno",
-        Lona: "Zocco",
-        Nara: "Stabbocchi",
+        Oreste: "Pantegani",
+        Cagatone: "Joe",
+        Marino: "Sumo",
       });
     });
   });
