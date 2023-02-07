@@ -255,7 +255,57 @@ describe("sortedset", () => {
     });
 
     describe("zkeys", () => {
-      // TODO
+      async function setupTestZset() {
+        expect(ssdb.a_zset("test", "marino", 1)).resolves.toBe(1);
+        expect(ssdb.a_zset("test", "sumo", 2)).resolves.toBe(1);
+        expect(ssdb.a_zset("test", "sirvano", 3)).resolves.toBe(1);
+        expect(ssdb.a_zset("test", "dora", 4)).resolves.toBe(1);
+      }
+
+      test("open range", async () => {
+        await setupTestZset();
+        // Keys sorted by (score ASC, key ASC)
+        expect(ssdb.a_zkeys("test")).resolves.toEqual([
+          "marino",
+          "sumo",
+          "sirvano",
+          "dora",
+        ]);
+      });
+
+      test("open range, limit=1", async () => {
+        await setupTestZset();
+        // Keys sorted by (score ASC, key ASC)
+        expect(ssdb.a_zkeys("test", "", "", "", 1)).resolves.toEqual([
+          "marino",
+        ]);
+      });
+
+      test("open range, with key_start", async () => {
+        await setupTestZset();
+        // sumo => 2: so range is (2, +INF]
+        expect(ssdb.a_zkeys("test", "sumo")).resolves.toEqual([
+          "sirvano",
+          "dora",
+        ]);
+      });
+
+      test("open range, with key_start and range_start", async () => {
+        await setupTestZset();
+        // range is [3, +INF]
+        expect(ssdb.a_zkeys("test", "nope", 3)).resolves.toEqual([
+          "sirvano",
+          "dora",
+        ]);
+      });
+
+      test("open range, with key_start, range_start and range_end", async () => {
+        await setupTestZset();
+        expect(ssdb.a_zkeys("test", "nope", 2, 3)).resolves.toEqual([
+          "sumo",
+          "sirvano",
+        ]);
+      });
     });
 
     describe("zscan", () => {
