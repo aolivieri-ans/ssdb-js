@@ -410,16 +410,66 @@ describe("sortedset", () => {
       });
     });
 
-    describe("zrrank", () => {
-      // TODO
-    });
-
     describe("zrange", () => {
-      // TODO
+      test("with default values", async () => {
+        await setupTestZset();
+        expect(ssdb.a_zrange("test")).resolves.toEqual([
+          { marino: 1 },
+          { sumo: 2 },
+          { maurizio: 3 },
+          { sirvano: 3 },
+          { dora: 4 },
+          { oreste: 10 },
+        ]);
+      });
+
+      test("out of bound offset", async () => {
+        await setupTestZset();
+        expect(ssdb.a_zrange("test", 1000)).resolves.toEqual([]);
+      });
+
+      test("exceeding limit", async () => {
+        await setupTestZset();
+        expect(ssdb.a_zrange("test", 0, 1000)).resolves.toEqual([
+          { marino: 1 },
+          { sumo: 2 },
+          { maurizio: 3 },
+          { sirvano: 3 },
+          { dora: 4 },
+          { oreste: 10 },
+        ]);
+      });
     });
 
     describe("zrrange", () => {
-      // TODO
+      test("with default values", async () => {
+        await setupTestZset();
+        expect(ssdb.a_zrrange("test")).resolves.toEqual([
+          { oreste: 10 },
+          { dora: 4 },
+          { sirvano: 3 },
+          { maurizio: 3 },
+          { sumo: 2 },
+          { marino: 1 },
+        ]);
+      });
+
+      test("out of bound offset", async () => {
+        await setupTestZset();
+        expect(ssdb.a_zrrange("test", 1000)).resolves.toEqual([]);
+      });
+
+      test("exceeding limit", async () => {
+        await setupTestZset();
+        expect(ssdb.a_zrange("test", 0, 1000)).resolves.toEqual([
+          { marino: 1 },
+          { sumo: 2 },
+          { maurizio: 3 },
+          { sirvano: 3 },
+          { dora: 4 },
+          { oreste: 10 },
+        ]);
+      });
     });
 
     describe("zclear", () => {
