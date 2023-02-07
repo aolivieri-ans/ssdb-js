@@ -309,7 +309,74 @@ describe("sortedset", () => {
     });
 
     describe("zscan", () => {
-      // TODO
+      // That is: return keys in (key.score == score_start && key > key_start || key.score > score_start)
+      // && key.score <= score_end.
+      //The score_start, score_end is of higher priority than key_start.
+      async function setupTestZset() {
+        expect(ssdb.a_zset("test", "marino", 1)).resolves.toBe(1);
+        expect(ssdb.a_zset("test", "sumo", 2)).resolves.toBe(1);
+        expect(ssdb.a_zset("test", "sirvano", 3)).resolves.toBe(1);
+        expect(ssdb.a_zset("test", "maurizio", 3)).resolves.toBe(1);
+        expect(ssdb.a_zset("test", "dora", 4)).resolves.toBe(1);
+        expect(ssdb.a_zset("test", "oreste", 10)).resolves.toBe(1);
+      }
+
+      test("non existing zset", async () => {
+        await setupTestZset();
+        expect(ssdb.a_zscan("nope")).resolves.toEqual([]);
+      });
+
+      test("all defaults", async () => {
+        await setupTestZset();
+        expect(ssdb.a_zscan("test")).resolves.toEqual([
+          { marino: 1 },
+          { sumo: 2 },
+          { maurizio: 3 },
+          { sirvano: 3 },
+          { dora: 4 },
+          { oreste: 10 },
+        ]);
+      });
+
+      test("with key_start", async () => {
+        await setupTestZset();
+        // range:  (key_start+score_start, key_end].
+        expect(ssdb.a_zscan("test", "maurizio")).resolves.toEqual([
+          { sirvano: 3 },
+          { dora: 4 },
+          { oreste: 10 },
+        ]);
+      });
+
+      test("with key_start and score_start", async () => {
+        await setupTestZset();
+        // range:  (key_start+score_start, key_end].
+        // The score_start, score_end is of higher priority than key_start.
+        expect(ssdb.a_zscan("test", "oreste", 3)).resolves.toEqual([
+          { sirvano: 3 },
+          { dora: 4 },
+          { oreste: 10 },
+        ]);
+      });
+
+      test("with key_start, score_start and score_end", async () => {
+        await setupTestZset();
+        // range:  (key_start+score_start, key_end].
+        // The score_start, score_end is of higher priority than key_start.
+        expect(ssdb.a_zscan("test", "oreste", 3, 4)).resolves.toEqual([
+          { sirvano: 3 },
+          { dora: 4 },
+        ]);
+      });
+
+      test("with key_start, score_start, score_end and limit", async () => {
+        await setupTestZset();
+        // range:  (key_start+score_start, key_end].
+        // The score_start, score_end is of higher priority than key_start.
+        expect(ssdb.a_zscan("test", "oreste", 3, 4, 1)).resolves.toEqual([
+          { sirvano: 3 },
+        ]);
+      });
     });
 
     describe("zrscan", () => {
