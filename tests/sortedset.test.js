@@ -5,6 +5,15 @@ let ssdb = SSDB.connect(cfg, (wtf) => wtf);
 
 // List tests
 describe("sortedset", () => {
+  async function setupTestZset() {
+    expect(ssdb.a_zset("test", "marino", 1)).resolves.toBe(1);
+    expect(ssdb.a_zset("test", "sumo", 2)).resolves.toBe(1);
+    expect(ssdb.a_zset("test", "sirvano", 3)).resolves.toBe(1);
+    expect(ssdb.a_zset("test", "maurizio", 3)).resolves.toBe(1);
+    expect(ssdb.a_zset("test", "dora", 4)).resolves.toBe(1);
+    expect(ssdb.a_zset("test", "oreste", 10)).resolves.toBe(1);
+  }
+
   describe("sorteset_set", () => {
     // false on error, other values indicate OK.
     describe("zset/get", () => {
@@ -255,21 +264,16 @@ describe("sortedset", () => {
     });
 
     describe("zkeys", () => {
-      async function setupTestZset() {
-        expect(ssdb.a_zset("test", "marino", 1)).resolves.toBe(1);
-        expect(ssdb.a_zset("test", "sumo", 2)).resolves.toBe(1);
-        expect(ssdb.a_zset("test", "sirvano", 3)).resolves.toBe(1);
-        expect(ssdb.a_zset("test", "dora", 4)).resolves.toBe(1);
-      }
-
       test("open range", async () => {
         await setupTestZset();
         // Keys sorted by (score ASC, key ASC)
         expect(ssdb.a_zkeys("test")).resolves.toEqual([
           "marino",
           "sumo",
+          "maurizio",
           "sirvano",
           "dora",
+          "oreste",
         ]);
       });
 
@@ -285,8 +289,10 @@ describe("sortedset", () => {
         await setupTestZset();
         // sumo => 2: so range is (2, +INF]
         expect(ssdb.a_zkeys("test", "sumo")).resolves.toEqual([
+          "maurizio",
           "sirvano",
           "dora",
+          "oreste",
         ]);
       });
 
@@ -296,6 +302,7 @@ describe("sortedset", () => {
         expect(ssdb.a_zkeys("test", "nope", 3)).resolves.toEqual([
           "sirvano",
           "dora",
+          "oreste",
         ]);
       });
 
@@ -303,6 +310,7 @@ describe("sortedset", () => {
         await setupTestZset();
         expect(ssdb.a_zkeys("test", "nope", 2, 3)).resolves.toEqual([
           "sumo",
+          "maurizio",
           "sirvano",
         ]);
       });
@@ -312,14 +320,6 @@ describe("sortedset", () => {
       // That is: return keys in (key.score == score_start && key > key_start || key.score > score_start)
       // && key.score <= score_end.
       //The score_start, score_end is of higher priority than key_start.
-      async function setupTestZset() {
-        expect(ssdb.a_zset("test", "marino", 1)).resolves.toBe(1);
-        expect(ssdb.a_zset("test", "sumo", 2)).resolves.toBe(1);
-        expect(ssdb.a_zset("test", "sirvano", 3)).resolves.toBe(1);
-        expect(ssdb.a_zset("test", "maurizio", 3)).resolves.toBe(1);
-        expect(ssdb.a_zset("test", "dora", 4)).resolves.toBe(1);
-        expect(ssdb.a_zset("test", "oreste", 10)).resolves.toBe(1);
-      }
 
       test("non existing zset", async () => {
         await setupTestZset();
@@ -340,7 +340,6 @@ describe("sortedset", () => {
 
       test("with key_start", async () => {
         await setupTestZset();
-        // range:  (key_start+score_start, key_end].
         expect(ssdb.a_zscan("test", "maurizio")).resolves.toEqual([
           { sirvano: 3 },
           { dora: 4 },
@@ -350,8 +349,6 @@ describe("sortedset", () => {
 
       test("with key_start and score_start", async () => {
         await setupTestZset();
-        // range:  (key_start+score_start, key_end].
-        // The score_start, score_end is of higher priority than key_start.
         expect(ssdb.a_zscan("test", "oreste", 3)).resolves.toEqual([
           { sirvano: 3 },
           { dora: 4 },
@@ -361,8 +358,6 @@ describe("sortedset", () => {
 
       test("with key_start, score_start and score_end", async () => {
         await setupTestZset();
-        // range:  (key_start+score_start, key_end].
-        // The score_start, score_end is of higher priority than key_start.
         expect(ssdb.a_zscan("test", "oreste", 3, 4)).resolves.toEqual([
           { sirvano: 3 },
           { dora: 4 },
@@ -371,8 +366,6 @@ describe("sortedset", () => {
 
       test("with key_start, score_start, score_end and limit", async () => {
         await setupTestZset();
-        // range:  (key_start+score_start, key_end].
-        // The score_start, score_end is of higher priority than key_start.
         expect(ssdb.a_zscan("test", "oreste", 3, 4, 1)).resolves.toEqual([
           { sirvano: 3 },
         ]);
@@ -384,11 +377,37 @@ describe("sortedset", () => {
     });
 
     describe("zrank", () => {
-      // TODO
+      test("on existing keys", async () => {
+        await setupTestZset();
+        expect(ssdb.a_zrank("test", "marino")).resolves.toBe(0);
+        expect(ssdb.a_zrank("test", "sumo")).resolves.toBe(1);
+        expect(ssdb.a_zrank("test", "maurizio")).resolves.toBe(2);
+        expect(ssdb.a_zrank("test", "sirvano")).resolves.toBe(3);
+        expect(ssdb.a_zrank("test", "dora")).resolves.toBe(4);
+        expect(ssdb.a_zrank("test", "oreste")).resolves.toBe(5);
+      });
+
+      test("on a non existing keys", async () => {
+        await setupTestZset();
+        expect(ssdb.a_zrank("test", "nope")).rejects.toEqual("not_found");
+      });
     });
 
-    describe("zrank", () => {
-      // TODO
+    describe("zrrank", () => {
+      test("on existing keys", async () => {
+        await setupTestZset();
+        expect(ssdb.a_zrrank("test", "marino")).resolves.toBe(5);
+        expect(ssdb.a_zrrank("test", "sumo")).resolves.toBe(4);
+        expect(ssdb.a_zrrank("test", "maurizio")).resolves.toBe(3);
+        expect(ssdb.a_zrrank("test", "sirvano")).resolves.toBe(2);
+        expect(ssdb.a_zrrank("test", "dora")).resolves.toBe(1);
+        expect(ssdb.a_zrrank("test", "oreste")).resolves.toBe(0);
+      });
+
+      test("on a non existing keys", async () => {
+        await setupTestZset();
+        expect(ssdb.a_zrrank("test", "nope")).rejects.toEqual("not_found");
+      });
     });
 
     describe("zrrank", () => {
