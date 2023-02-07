@@ -473,19 +473,72 @@ describe("sortedset", () => {
     });
 
     describe("zclear", () => {
-      // TODO
+      // Returns number of deleted keys (0 if zset does not exists)
+      test("non-empty zset", async () => {
+        await setupTestZset();
+        expect(ssdb.a_zclear("test")).resolves.toBe(6);
+      });
+
+      test("empty zset", async () => {
+        await setupTestZset();
+        expect(ssdb.a_zclear("nope")).resolves.toBe(0);
+      });
     });
 
     describe("zcount", () => {
-      // TODO
+      test("default values", async () => {
+        await setupTestZset();
+        expect(ssdb.a_zcount("test")).resolves.toBe(6);
+      });
+      test("with score_start", async () => {
+        await setupTestZset();
+        expect(ssdb.a_zcount("test", 3)).resolves.toBe(4);
+      });
+      test("with score_start and score_end", async () => {
+        await setupTestZset();
+        expect(ssdb.a_zcount("test", 3, 4)).resolves.toBe(3);
+      });
+      test("with score_start and score_end (no values in range)", async () => {
+        await setupTestZset();
+        expect(ssdb.a_zcount("test", 11, 20)).resolves.toBe(0);
+      });
     });
 
     describe("zsum", () => {
-      // TODO
+      test("default values", async () => {
+        await setupTestZset();
+        expect(ssdb.a_zsum("test")).resolves.toBe(23);
+      });
+      test("with score_start", async () => {
+        await setupTestZset();
+        expect(ssdb.a_zsum("test", 3)).resolves.toBe(20);
+      });
+      test("with score_start and score_end", async () => {
+        await setupTestZset();
+        expect(ssdb.a_zsum("test", 3, 4)).resolves.toBe(10);
+      });
+      test("with score_start and score_end (no values in range)", async () => {
+        await setupTestZset();
+        expect(ssdb.a_zsum("test", 11, 20)).resolves.toBe(0);
+      });
     });
 
     describe("zavg", () => {
-      // TODO
+      test("default values", async () => {
+        await setupTestZset();
+        expect(ssdb.a_zsum("test")).resolves.toBe(23);
+        expect(ssdb.a_zcount("test")).resolves.toBe(6);
+        expect(ssdb.a_zavg("test")).resolves.toBe(3.833333); // 23/6
+      });
+      test("with score_start", async () => {
+        await setupTestZset();
+        expect(ssdb.a_zsum("test", 3)).resolves.toBe(20);
+        expect(ssdb.a_zavg("test", 3)).resolves.toBe(5.0); // 20/4
+      });
+      test("with score_start and score_end (no values in range)", async () => {
+        await setupTestZset();
+        expect(ssdb.a_zsum("test", 11, 20)).resolves.toBe(0);
+      });
     });
 
     describe("zremrangebyrank", () => {
