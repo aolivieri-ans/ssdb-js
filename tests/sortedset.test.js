@@ -627,7 +627,15 @@ describe("sortedset", () => {
     });
 
     describe("multi_zset", () => {
-      // TODO
+      test("with multiple values", async () => {
+        expect(
+          ssdb.a_multi_zset("test", { nonno_palmiro: 100, cagatone_joe: 1000 })
+        ).resolves.toEqual(2);
+        expect(ssdb.a_zscan("test")).resolves.toEqual([
+          { nonno_palmiro: 100 },
+          { cagatone_joe: 1000 },
+        ]);
+      });
     });
 
     describe("multi_zget", () => {
