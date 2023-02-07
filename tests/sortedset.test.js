@@ -542,19 +542,88 @@ describe("sortedset", () => {
     });
 
     describe("zremrangebyrank", () => {
-      // TODO
+      test("on non-empty rank range", async () => {
+        await setupTestZset();
+        expect(ssdb.a_zremrangebyrank("test", 0, 2)).resolves.toBe(3);
+        expect(ssdb.a_zscan("test")).resolves.toEqual([
+          { sirvano: 3 },
+          { dora: 4 },
+          { oreste: 10 },
+        ]);
+      });
+      test("on empty rank range", async () => {
+        await setupTestZset();
+        expect(ssdb.a_zremrangebyrank("test", 10, 20)).resolves.toBe(0);
+      });
     });
 
     describe("zremrangebyscore", () => {
-      // TODO
+      test("on non-empty score range", async () => {
+        await setupTestZset();
+        expect(ssdb.a_zremrangebyscore("test", 1, 3)).resolves.toBe(4);
+        expect(ssdb.a_zscan("test")).resolves.toEqual([
+          { dora: 4 },
+          { oreste: 10 },
+        ]);
+      });
+      test("on empty score range", async () => {
+        await setupTestZset();
+        expect(ssdb.a_zremrangebyscore("test", 20, 30)).resolves.toBe(0);
+      });
     });
 
     describe("zpop_front", () => {
-      // TODO
+      test("pop single element (default limit)", async () => {
+        await setupTestZset();
+        expect(ssdb.a_zpop_front("test")).resolves.toEqual([{ marino: 1 }]);
+        expect(ssdb.a_zscan("test")).resolves.toEqual([
+          { sumo: 2 },
+          { maurizio: 3 },
+          { sirvano: 3 },
+          { dora: 4 },
+          { oreste: 10 },
+        ]);
+      });
+      test("pop multiple element (limit=2)", async () => {
+        await setupTestZset();
+        expect(ssdb.a_zpop_front("test", 2)).resolves.toEqual([
+          { marino: 1 },
+          { sumo: 2 },
+        ]);
+        expect(ssdb.a_zscan("test")).resolves.toEqual([
+          { maurizio: 3 },
+          { sirvano: 3 },
+          { dora: 4 },
+          { oreste: 10 },
+        ]);
+      });
     });
 
     describe("zpop_back", () => {
-      // TODO
+      test("pop single element (default limit)", async () => {
+        await setupTestZset();
+        expect(ssdb.a_zpop_back("test")).resolves.toEqual([{ oreste: 10 }]);
+        expect(ssdb.a_zscan("test")).resolves.toEqual([
+          { marino: 1 },
+          { sumo: 2 },
+          { maurizio: 3 },
+          { sirvano: 3 },
+          { dora: 4 },
+        ]);
+      });
+      test("pop multiple element (limit=2)", async () => {
+        await setupTestZset();
+        expect(ssdb.a_zpop_back("test", 2)).resolves.toEqual([
+          { oreste: 10 },
+          { dora: 4 },
+        ]);
+        expect(ssdb.a_zscan("test")).resolves.toEqual([
+          { marino: 1 },
+          { sumo: 2 },
+          { maurizio: 3 },
+          { sirvano: 3 },
+        ]);
+      });
     });
 
     describe("multi_zset", () => {
