@@ -21,9 +21,10 @@ exports.connect = function (opts, listener) {
   //timeout = timeout || 0;
   //listener = listener || function(){};
 
-  if (!opts) {
-    opts = { port: 8888, host: "localhost" };
-  }
+  optz = {};
+  optz.port = parseInt(opts.port) || 8888;
+  optz.host = opts.host || "localhost";
+  optz.sock_timeout = parseInt(opts.sock_timeout) || 0;
 
   var sock = new net.Socket();
   sock.on("error", function (e) {
@@ -48,12 +49,11 @@ exports.connect = function (opts, listener) {
     }
   });
 
-  sock.connect(opts, function () {
-    //console.log('Socket connected!');
+  sock.connect(optz, function () {
     connected = true;
     sock.setNoDelay(true);
     sock.setKeepAlive(true);
-    sock.setTimeout(0); //timeout);
+    sock.setTimeout(optz.sock_timeout);
     listener(0, self);
   });
 
