@@ -1,0 +1,15 @@
+{
+  "name": "ssdb-node",
+  "version": "1.0.0",
+  "author": "Alpha Networks Solution <https://www.alphanetworks.com.sg/>",
+  "description": "ES5 SSDB nodejs Client",
+  "main": "SSDB.js",
+  "scripts": {
+    "test": "jest --detectOpenHandles",
+    "start": "node demo.js"
+  },
+  "license": "MIT",
+  "devDependencies": {
+    "jest": "^29.4.1"
+  }
+}
