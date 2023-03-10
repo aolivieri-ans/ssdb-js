@@ -134,13 +134,13 @@ exports.connect = function (opts, listener) {
         // not finished
         return null;
       }
-      var line = recv_buf.slice(spos, pos).toString();
+      var line = recv_buf.subarray(spos, pos).toString();
       spos = pos + 1;
       line = line.replace(/^\s+(.*)\s+$/, "$&");
       if (line.length == 0) {
         // parse end
         //recv_buf = recv_buf.substr(spos);
-        recv_buf = recv_buf.slice(spos);
+        recv_buf = recv_buf.subarray(spos);
         break;
       }
       var len = parseInt(line);
@@ -156,7 +156,7 @@ exports.connect = function (opts, listener) {
         return null;
       }
       //var data = recv_buf.substr(spos, len);
-      var data = recv_buf.slice(spos, spos + len);
+      var data = recv_buf.subarray(spos, spos + len);
       spos += len;
       ret.push(data);
 
@@ -164,7 +164,7 @@ exports.connect = function (opts, listener) {
       pos = memchr(recv_buf, "\n", spos);
       if (pos == -1) {
         // not finished
-        console.log("error 3");
+        //console.log("more data");
         return null;
       }
       // '\n', or '\r\n'
@@ -182,6 +182,7 @@ exports.connect = function (opts, listener) {
       }
       spos = pos + 1;
     }
+
     return ret;
   }
 
