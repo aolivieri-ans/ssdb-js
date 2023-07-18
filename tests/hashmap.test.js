@@ -1,7 +1,20 @@
-const SSDB = require("../SSDB.js");
+const { SSDBClient } = require("../index");
 const cfg = require("./cfg");
 
-let ssdb = SSDB.connect(cfg, (wtf) => wtf);
+let ssdb = new SSDBClient(cfg.single_host);
+
+beforeAll(async () => {
+  await ssdb.connect();
+});
+
+beforeEach(async () => {
+  await ssdb.a_flushdb();
+});
+
+afterAll(async () => {
+  await ssdb.a_compact();
+  ssdb.close();
+});
 
 const testKey = "test";
 const testObj = { marino: "sumo" };
@@ -36,10 +49,10 @@ describe("Hashmap", () => {
     test("missing key of an existing hashmap", async () => {
       let resp = await ssdb.a_hset("test", "marino", "sumo");
       expect(resp).toBe(1);
-      expect(ssdb.a_hget("test", "sirvano")).rejects.toEqual("not_found");
+      await expect(ssdb.a_hget("test", "sirvano")).rejects.toEqual("not_found");
     });
     test("missing key of a missing hashmap", async () => {
-      expect(ssdb.a_hget("test", "sirvano")).rejects.toEqual("not_found");
+      await expect(ssdb.a_hget("test", "sirvano")).rejects.toEqual("not_found");
     });
   });
 
@@ -50,7 +63,7 @@ describe("Hashmap", () => {
       expect(resp).toBe(1);
       resp = await ssdb.a_hdel("test", "marino");
       expect(resp).toBe(1);
-      expect(ssdb.a_hget("test", "marino")).rejects.toEqual("not_found");
+      await expect(ssdb.a_hget("test", "marino")).rejects.toEqual("not_found");
     });
     test("non existing key of an existing hashmap", async () => {
       let resp = await ssdb.a_hset("test", "marino", "sumo");
@@ -83,7 +96,7 @@ describe("Hashmap", () => {
     test("existing name, existing key with non-numerical value", async () => {
       let resp = await ssdb.a_hset("test", "marino", "sumo");
       expect(resp).toBe(1);
-      expect(ssdb.a_hincr("test", "marino")).rejects.toEqual("error");
+      await expect(ssdb.a_hincr("test", "marino")).rejects.toEqual("error");
     });
     test("existing name, non-existing key", async () => {
       // if the key does not exist it is created
@@ -349,13 +362,4 @@ describe("Hashmap", () => {
       });
     });
   });
-});
-
-beforeEach(async () => {
-  await ssdb.a_flushdb();
-});
-
-afterAll(async () => {
-  await ssdb.a_compact();
-  ssdb.close();
 });

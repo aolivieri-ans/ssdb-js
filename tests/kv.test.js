@@ -1,7 +1,20 @@
-const SSDB = require("../SSDB.js");
+const { SSDBClient } = require("../index");
 const cfg = require("./cfg");
 
-let ssdb = SSDB.connect(cfg, (wtf) => wtf);
+let ssdb = new SSDBClient(cfg.single_host);
+
+beforeAll(async () => {
+  await ssdb.connect();
+});
+
+beforeEach(async () => {
+  await ssdb.a_flushdb();
+});
+
+afterAll(async () => {
+  await ssdb.a_compact();
+  ssdb.close();
+});
 
 // Key-value tests
 describe("Key-value", () => {
@@ -12,6 +25,7 @@ describe("Key-value", () => {
       const resp = await ssdb.a_set("marino", "sumo");
       expect(resp).toBe("ok");
     });
+
     test("set an empty value", async () => {
       const resp = await ssdb.a_set("emptyvalue", "");
       expect(resp).toBe("ok");
@@ -37,7 +51,7 @@ describe("Key-value", () => {
       const resp = await ssdb.a_setx("marino", "sumo", 0);
       expect(resp).toBe("ok");
       await new Promise((r) => setTimeout(r, 10)); // sleep 10ms
-      await expect(ssdb.a_get("marino")).rejects.toEqual("not_found");
+      await await expect(ssdb.a_get("marino")).rejects.toEqual("not_found");
     });
   });
 
@@ -70,7 +84,7 @@ describe("Key-value", () => {
       resp = await ssdb.a_expire("marino", 0);
       expect(resp).toBe(1);
       await new Promise((r) => setTimeout(r, 10)); // sleep 10ms
-      await expect(ssdb.a_get("marino")).rejects.toEqual("not_found");
+      await await expect(ssdb.a_get("marino")).rejects.toEqual("not_found");
     });
 
     test("expire when key does not exists", async () => {
@@ -110,7 +124,7 @@ describe("Key-value", () => {
     });
 
     test("get a non-existing key", async () => {
-      await expect(ssdb.a_get("stocazzo")).rejects.toEqual("not_found");
+      await await expect(ssdb.a_get("stocazzo")).rejects.toEqual("not_found");
     });
   });
 
@@ -119,7 +133,7 @@ describe("Key-value", () => {
     // Otherwise return not_found Status Code. The value is either added or updated.
 
     test("getset a non existing key", async () => {
-      await expect(ssdb.a_getset("marino", "sumo")).rejects.toEqual(
+      await await expect(ssdb.a_getset("marino", "sumo")).rejects.toEqual(
         "not_found"
       );
     });
@@ -170,7 +184,7 @@ describe("Key-value", () => {
     test("incr an existing key, with an invalid non-int value", async () => {
       let resp = await ssdb.a_set("marino", "sumo");
       expect(resp).toBe("ok");
-      await expect(ssdb.a_incr("marino", 1)).rejects.toEqual("error");
+      await await expect(ssdb.a_incr("marino", 1)).rejects.toEqual("error");
     });
   });
 
@@ -439,13 +453,4 @@ describe("Key-value", () => {
       expect(resp).toEqual({ Nonno: "Palmiro" });
     });
   });
-});
-
-beforeEach(async () => {
-  await ssdb.a_flushdb();
-});
-
-afterAll(async () => {
-  await ssdb.a_compact();
-  ssdb.close();
 });

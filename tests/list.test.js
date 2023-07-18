@@ -1,7 +1,20 @@
-const SSDB = require("../SSDB.js");
+const { SSDBClient } = require("../index");
 const cfg = require("./cfg");
 
-let ssdb = SSDB.connect(cfg, (wtf) => wtf);
+let ssdb = new SSDBClient(cfg.single_host);
+
+beforeAll(async () => {
+  await ssdb.connect();
+});
+
+beforeEach(async () => {
+  await ssdb.a_flushdb();
+});
+
+afterAll(async () => {
+  await ssdb.a_compact();
+  ssdb.close();
+});
 
 // List tests
 describe("List", () => {
@@ -47,7 +60,7 @@ describe("List", () => {
       expect(resp).toEqual(["marino", "sumo"]);
     });
     test("on a non existing list", async () => {
-      expect(ssdb.a_qpop_front("test")).rejects.toEqual("not_found");
+      await expect(ssdb.a_qpop_front("test")).rejects.toEqual("not_found");
     });
     test("on an empty list", async () => {
       let resp = await ssdb.a_qpush_back("test", "marino");
@@ -55,7 +68,7 @@ describe("List", () => {
       resp = await ssdb.a_qpop_front("test");
       expect(resp).toEqual("marino");
       // differs from doc https://ssdb.io/docs/commands/qpop_front.html
-      expect(ssdb.a_qpop_front("test")).rejects.toEqual("not_found");
+      await expect(ssdb.a_qpop_front("test")).rejects.toEqual("not_found");
     });
     test("on an existing list, size > list size", async () => {
       let resp = await ssdb.a_qpush_back("test", "marino", "sumo");
@@ -79,7 +92,7 @@ describe("List", () => {
       expect(resp).toEqual(["sirvano", "sumo"]);
     });
     test("on a non existing list", async () => {
-      expect(ssdb.a_qpop("test")).rejects.toEqual("not_found");
+      await expect(ssdb.a_qpop("test")).rejects.toEqual("not_found");
     });
     test("on an empty list", async () => {
       let resp = await ssdb.a_qpush_back("test", "marino");
@@ -87,7 +100,7 @@ describe("List", () => {
       resp = await ssdb.a_qpop("test");
       expect(resp).toEqual("marino");
       // differs from doc https://ssdb.io/docs/commands/qpop_back.html
-      expect(ssdb.a_qpop("test")).rejects.toEqual("not_found");
+      await expect(ssdb.a_qpop("test")).rejects.toEqual("not_found");
     });
     test("on an existing list, size > list size", async () => {
       let resp = await ssdb.a_qpush_back("test", "marino", "sumo");
@@ -106,7 +119,7 @@ describe("List", () => {
     });
     test("on a non-existing list", async () => {
       // Differs from https://ssdb.io/docs/commands/qfront.html
-      expect(ssdb.a_qpop("test")).rejects.toEqual("not_found");
+      await expect(ssdb.a_qpop("test")).rejects.toEqual("not_found");
     });
   });
 
@@ -119,7 +132,7 @@ describe("List", () => {
     });
     test("on a non-existing list", async () => {
       // Differs from https://ssdb.io/docs/commands/qfront.html
-      expect(ssdb.a_qback("test")).rejects.toEqual("not_found");
+      await expect(ssdb.a_qback("test")).rejects.toEqual("not_found");
     });
   });
 
@@ -164,10 +177,10 @@ describe("List", () => {
     test("on an existing list, out of range index", async () => {
       let resp = await ssdb.a_qpush("test", "marino", "sumo", "sirvano");
       expect(resp).toBe(3);
-      expect(ssdb.a_qget("test", 3)).rejects.toEqual("not_found");
+      await expect(ssdb.a_qget("test", 3)).rejects.toEqual("not_found");
     });
     test("on a non existing list", async () => {
-      expect(ssdb.a_qget("nope", 0)).rejects.toEqual("not_found");
+      await expect(ssdb.a_qget("nope", 0)).rejects.toEqual("not_found");
     });
   });
 
@@ -183,11 +196,11 @@ describe("List", () => {
     test("on an existing list, out of range index", async () => {
       let resp = await ssdb.a_qpush("test", "marino", "sumo", "sirvano");
       expect(resp).toBe(3);
-      expect(ssdb.a_qset("test", 10, "replaced")).rejects.toEqual("error");
+      await expect(ssdb.a_qset("test", 10, "replaced")).rejects.toEqual("error");
     });
 
     test("on a non existing list", async () => {
-      expect(ssdb.a_qset("nope", 0, "dora")).rejects.toEqual("error");
+      await expect(ssdb.a_qset("nope", 0, "dora")).rejects.toEqual("error");
     });
   });
 
@@ -323,13 +336,4 @@ describe("List", () => {
       expect(resp).toEqual(["thekey"]);
     });
   });
-});
-
-beforeEach(async () => {
-  await ssdb.a_flushdb();
-});
-
-afterAll(async () => {
-  await ssdb.a_compact();
-  ssdb.close();
 });

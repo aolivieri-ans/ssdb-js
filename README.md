@@ -1,3 +1,3 @@
-# nodessdb
+# SSDB-js
 
-SSDB nodejs client
+SSDB client pure JS implementation

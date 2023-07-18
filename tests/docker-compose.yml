@@ -1,0 +1,71 @@
+version: "3"
+services:
+  ssdb1:
+    build:
+      context: ""
+      dockerfile: "./Dockerfile"
+    ports:
+      - "7001:8888"
+
+  ssdb2:
+    build:
+      context: ""
+      dockerfile: "./Dockerfile"
+    ports:
+      - "7002:8888"
+
+  ssdb3:
+    build:
+      context: ""
+      dockerfile: "./Dockerfile"
+    ports:
+      - "7003:8888"
+
+  ssdb4:
+    build:
+      context: ""
+      dockerfile: "./Dockerfile"
+    ports:
+      - "7004:8888"
+
+  ssdb5:
+    build:
+      context: ""
+      dockerfile: "./Dockerfile"
+    ports:
+      - "7005:8888"
+
+  ssdb6:
+    build:
+      context: ""
+      dockerfile: "./Dockerfile"
+    ports:
+      - "7006:8888"
+
+  ssdb7:
+    build:
+      context: ""
+      dockerfile: "./Dockerfile"
+    ports:
+      - "7007:8888"
+
+  ssdb8:
+    build:
+      context: ""
+      dockerfile: "./Dockerfile"
+    ports:
+      - "7008:8888"
+      
+  ssdb9:
+    build:
+      context: ""
+      dockerfile: "./Dockerfile"
+    ports:
+      - "7009:8888"
+
+  ssdb10:
+    build:
+      context: ""
+      dockerfile: "./Dockerfile"
+    ports:
+      - "7010:8888"
