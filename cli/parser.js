@@ -13,7 +13,7 @@ class SSDB_Response {
     }
 
     not_found() {
-        return this.message == 'not_found';
+        return this.code == 'not_found';
     }
 
     set(code, data_or_message = null) {
@@ -219,6 +219,8 @@ class SSDB_Response {
     }
 
 }
+
+
 
 module.exports = {
     SSDB_Response
