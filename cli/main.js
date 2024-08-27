@@ -1,9 +1,9 @@
 #!/usr/bin/env node
 
-const readline = require('readline');
 const { SSDBClient } = require("../index");
 const { SSDB_Response } = require('./parser');
 const { buildPrompt } = require('./prompt');
+const { parseCommand } = require('./util');
 
 function printResult(cmd, resp, elapsed){
 
@@ -103,58 +103,6 @@ function printResult(cmd, resp, elapsed){
     }
 }
 
-function parseCommand(input) {
-    const args = [];
-    let currentArg = '';
-    let inQuotes = false;
-    let quoteChar = null;
-
-    for (let i = 0; i < input.length; i++) {
-        const char = input[i];
-
-        if (char === '"' || char === "'") {
-            if (inQuotes) {
-                if (char === quoteChar) {
-                    // End of quoted string
-                    inQuotes = false;
-                    quoteChar = null;
-                    args.push(currentArg);  // Push even if empty
-                    currentArg = '';
-                } else {
-                    currentArg += char;
-                }
-            } else {
-                // Start of quoted string
-                inQuotes = true;
-                quoteChar = char;
-                if (currentArg.length > 0) {
-                    args.push(currentArg);
-                    currentArg = '';
-                }
-            }
-        } else if (char === ' ' && !inQuotes) {
-            if (currentArg.length > 0) {
-                args.push(currentArg);
-                currentArg = '';
-            }
-
-            // Skip additional spaces if there are any
-            while (input[i + 1] === ' ') {
-                i++;
-            }
-        } else {
-            currentArg += char;
-        }
-    }
-
-    if (currentArg.length > 0 || inQuotes) {
-        args.push(currentArg);
-    }
-
-    return args;
-}
-
-
 
 (async () => {
     // Main
@@ -166,7 +114,6 @@ function parseCommand(input) {
     const ssdb = new SSDBClient([hostPort]);
 
     await ssdb.connect();
-
 
     try {
 
@@ -180,7 +127,6 @@ function parseCommand(input) {
                 break;
             try {
                 const splitted = parseCommand(inputStr)
-                console.log(JSON.stringify(splitted))
                 const cmd = splitted[0].toLocaleLowerCase()
                 const start_ts = Date.now()
                 let ssdbResp = await ssdb.raw_request([...splitted])
