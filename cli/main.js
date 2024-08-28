@@ -27,7 +27,10 @@ const options = {
 const {
     values: args,
     positionals
-} = parseArgs({args: process.argv.slice(2), allowPositionals:true, options});
+} = parseArgs({
+    //args: process.argv.slice(2), 
+    allowPositionals:true, 
+    options});
 
 (async () => {
     // Main
