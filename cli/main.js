@@ -3,7 +3,7 @@
 const { SSDBClient } = require("../index");
 const { SSDB_Response } = require('./parser');
 const { buildPrompt } = require('./prompt');
-const { parseCommand, printResult } = require('./util');
+const { parseCommand, printResult, readStdin } = require('./util');
 const { parseArgs } = require('node:util');
 
 const options = {
@@ -28,9 +28,9 @@ const {
     values: args,
     positionals
 } = parseArgs({
-    //args: process.argv.slice(2), 
     allowPositionals:true, 
-    options});
+    options
+});
 
 (async () => {
     // Main
@@ -40,8 +40,17 @@ const {
     await ssdb.connect();
     
     try {
+        let cmd = ""
+        if (!process.stdin.isTTY) {
+            cmd = (await readStdin()).trim()
+        }
+
         if(positionals.length > 0){
-            await executeCommand(positionals.join(" "), ssdb)
+            cmd = positionals.join(" ")
+        }
+
+        if(cmd.length > 0){
+            await executeCommand(ssdb, cmd)
         }else{
             await executePrompt(ssdb, host, port);
             console.log("bye.")
@@ -65,21 +74,28 @@ async function executePrompt(ssdb, host, port) {
             continue;
         if (inputStr == "q" || inputStr == "quit")
             break;
-        try {
-            await executeCommand(inputStr, ssdb);
-        } catch (error) {
-            console.log(error);
-        }
+
+        await executeCommand(ssdb, inputStr);
     } while (true);
 }
 
-async function executeCommand(inputStr, ssdb) {
+async function executeCommand(ssdb, inputStr) {
     const splitted = parseCommand(inputStr);
     const cmd = splitted[0].toLocaleLowerCase();
     const start_ts = Date.now();
-    let ssdbResp = await ssdb.raw_request([...splitted]);
-    const end_ts = Date.now();
-    const parsed = SSDB_Response.parseCmdResponse(cmd, ssdbResp);
-    printResult(cmd, parsed, (end_ts - start_ts) / 1000);
+    try {
+        let ssdbResp = await ssdb.raw_request([...splitted]);
+        const end_ts = Date.now();
+        const parsed = SSDB_Response.parseCmdResponse(cmd, ssdbResp);
+        printResult(cmd, parsed, (end_ts - start_ts) / 1000);
+    } catch (error) {
+        if(error.code){
+            // server error
+            const end_ts = Date.now();
+            printResult(cmd, new SSDB_Response(error.code, error.message), (end_ts - start_ts) / 1000)
+        }else{
+            console.error(error)
+        }
+    }
 }
 
