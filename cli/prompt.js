@@ -65,8 +65,8 @@ function buildAutocompleter(ssdbCli) {
         const split = input.split(" ")
         if(split.length > 1 && cmd2args[split[0]]){
             const cmd = split[0];
-            const args = cmd2args[cmd]
-            return [`${cmd} ${args.map(a => `[${a}]`).join(" ")}`]
+            const args = cmd2args[cmd].map(s => s.replace("_", "-"))
+            return [`${cmd} ${args.map(a => `<${a}>`).join(" ")}`]
         }else{
             return Object.keys(cmd2args).filter(option => option.startsWith(input));
         }
