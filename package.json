@@ -1,6 +1,6 @@
 {
   "name": "ssdb-node",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "author": "Alpha Networks Solution <https://www.alphanetworks.com.sg/>",
   "description": "SSDB nodejs Client",
   "main": "index.js",
