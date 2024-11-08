@@ -8,7 +8,7 @@
     "test": "jest --detectOpenHandles"
   },
   "bin": {
-    "ssdbjs-cli": "./tools/cli.js"
+    "ssdb-cli": "./cli/main.js"
   },
   "license": "MIT",
   "devDependencies": {
